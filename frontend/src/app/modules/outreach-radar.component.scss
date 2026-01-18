@@ -1,0 +1,168 @@
+.module-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.module-header {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.back-link {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+}
+
+.header-title h1 {
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  margin-bottom: 10px;
+}
+
+.lead {
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.7rem;
+  color: var(--accent-2);
+  margin-bottom: 8px;
+}
+
+.header-badge {
+  justify-self: start;
+  background: var(--surface);
+  padding: 12px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.badge-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.badge-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.panel {
+  background: var(--surface-alt);
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.panel.is-visible {
+  animation: fadeUp 0.7s ease forwards;
+}
+
+.panel.accent {
+  background: linear-gradient(135deg, #1a2f2d, #113026);
+}
+
+.panel h2 {
+  margin-bottom: 8px;
+}
+
+.panel-subtitle {
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.stage-list {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.stage {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: var(--bg-alt);
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stage-index {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  margin-top: 6px;
+  box-shadow: 0 0 10px rgba(244, 185, 67, 0.6);
+}
+
+.stage-title {
+  font-weight: 600;
+}
+
+.stage-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.source-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.source-card {
+  background: rgba(15, 27, 30, 0.6);
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.source-title {
+  font-weight: 600;
+}
+
+.source-share {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 6px 0;
+}
+
+.source-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.source-footer {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+@media (max-width: 720px) {
+  .header-badge {
+    justify-self: start;
+  }
+}

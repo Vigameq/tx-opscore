@@ -1,0 +1,53 @@
+<div class="module-page">
+  <header class="module-header">
+    <a class="back-link" routerLink="/">← Back to marketplace</a>
+    <div class="header-title">
+      <p class="eyebrow">Outreach module</p>
+      <h1>Outreach Radar</h1>
+      <p class="lead">
+        Track every lead from source to execution and keep the sales motion
+        visible across teams.
+      </p>
+    </div>
+    <div class="header-badge">
+      <p class="badge-label">Status</p>
+      <p class="badge-value">Live</p>
+    </div>
+  </header>
+
+  <section class="module-grid">
+    <div class="panel" data-animate>
+      <h2>{{ pipelineTitle }}</h2>
+      <p class="panel-subtitle">
+        Standardized stages that move leads into delivery without losing context.
+      </p>
+      <ol class="stage-list">
+        <li class="stage" *ngFor="let stage of stages">
+          <div class="stage-index"></div>
+          <div>
+            <p class="stage-title">{{ stage.name }}</p>
+            <p class="stage-meta">{{ stage.description }}</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="panel accent" data-animate>
+      <h2>Source tracking</h2>
+      <p class="panel-subtitle">
+        Understand which motions create the most qualified opportunities.
+      </p>
+      <div class="source-grid">
+        <div class="source-card" *ngFor="let source of sources">
+          <p class="source-title">{{ source.source }}</p>
+          <p class="source-share">{{ source.share }}</p>
+          <p class="source-note">{{ source.note }}</p>
+        </div>
+      </div>
+      <div class="source-footer">
+        <span>Lead quality scorecards</span>
+        <span>UTM + campaign attribution</span>
+      </div>
+    </div>
+  </section>
+</div>

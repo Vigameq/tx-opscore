@@ -14,11 +14,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the hero heading', () => {
+  it('should render the router outlet shell', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent)
-      .toContain('Opscore marketplace for every stage of delivery.');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });
