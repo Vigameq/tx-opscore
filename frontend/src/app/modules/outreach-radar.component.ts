@@ -95,6 +95,11 @@ export class OutreachRadarComponent implements AfterViewInit {
     { stage: 'Execution', slaDays: 3, targetConversion: '15%' },
   ];
 
+  showProjectModal = false;
+  showOpportunityModal = false;
+  selectedStageFilter = 'All';
+  stageFilterLocked = false;
+
   ngAfterViewInit(): void {
     const animated = Array.from(document.querySelectorAll('[data-animate]')) as HTMLElement[];
 
@@ -139,6 +144,35 @@ export class OutreachRadarComponent implements AfterViewInit {
         (opportunity) => opportunity.stage === stage
       ).length,
     }));
+  }
+
+  get modalOpportunities(): Opportunity[] {
+    const matchesStage = (opportunity: Opportunity) =>
+      this.selectedStageFilter === 'All' || opportunity.stage === this.selectedStageFilter;
+
+    return this.opportunities.filter(matchesStage);
+  }
+
+  get modalProjects(): Array<ProjectSummary & { opportunityCount: number; totalValue: number }> {
+    const grouped = new Map<string, { count: number; value: number }>();
+
+    this.modalOpportunities.forEach((opportunity) => {
+      const entry = grouped.get(opportunity.projectId) || { count: 0, value: 0 };
+      entry.count += 1;
+      entry.value += opportunity.value;
+      grouped.set(opportunity.projectId, entry);
+    });
+
+    return this.projects
+      .filter((project) => grouped.has(project.id))
+      .map((project) => {
+        const summary = grouped.get(project.id) || { count: 0, value: 0 };
+        return {
+          ...project,
+          opportunityCount: summary.count,
+          totalValue: summary.value,
+        };
+      });
   }
 
   addOpportunity(): void {
@@ -188,5 +222,28 @@ export class OutreachRadarComponent implements AfterViewInit {
       owner: '',
       status: 'Discovery',
     };
+    this.showProjectModal = false;
+  }
+
+  openProjectModal(): void {
+    this.showProjectModal = true;
+  }
+
+  openOpportunityModal(): void {
+    this.showOpportunityModal = true;
+    this.selectedStageFilter = 'All';
+    this.stageFilterLocked = false;
+  }
+
+  closeModals(): void {
+    this.showProjectModal = false;
+    this.showOpportunityModal = false;
+    this.stageFilterLocked = false;
+  }
+
+  openStageFilter(stage: string): void {
+    this.selectedStageFilter = stage;
+    this.showOpportunityModal = true;
+    this.stageFilterLocked = true;
   }
 }

@@ -1,77 +1,101 @@
 <div class="module-page">
-  <header class="module-header">
-    <a class="back-link" routerLink="/">← Back to marketplace</a>
-    <div class="header-title">
+  <header class="module-hero" data-animate>
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
       <p class="eyebrow">Outreach module</p>
       <h1>Outreach Radar</h1>
       <p class="lead">
         Track every lead from source to execution and keep the sales motion
         visible across teams.
       </p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: Live</span>
+        <span class="hero-pill">Projects: {{ projects.length }}</span>
+        <span class="hero-pill">Active opps: {{ filteredOpportunities.length }}</span>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" type="button" (click)="openProjectModal()">
+          New project
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="openOpportunityModal()">
+          Manage opportunities
+        </button>
+      </div>
     </div>
-    <div class="header-badge">
-      <p class="badge-label">Status</p>
-      <p class="badge-value">Live</p>
+    <div class="hero-card">
+      <h2>{{ pipelineTitle }}</h2>
+      <p class="panel-subtitle">
+        Lead → Opportunity pipeline with velocity and conversion targets.
+      </p>
+      <div class="stage-counts">
+        <button
+          class="stage-count"
+          type="button"
+          *ngFor="let item of stageCounts"
+          (click)="openStageFilter(item.stage)"
+        >
+          <p class="stage-count-label">{{ item.stage }}</p>
+          <p class="stage-count-value">{{ item.count }}</p>
+        </button>
+      </div>
     </div>
   </header>
 
-  <section class="module-grid">
-    <div class="panel" data-animate>
-      <h2>{{ pipelineTitle }}</h2>
-      <p class="panel-subtitle">
-        Standardized stages that move leads into delivery without losing context.
-      </p>
-      <div class="stage-counts">
-        <div class="stage-count" *ngFor="let item of stageCounts">
-          <p class="stage-count-label">{{ item.stage }}</p>
-          <p class="stage-count-value">{{ item.count }}</p>
-        </div>
+  <section class="pipeline-strip" data-animate>
+    <h2 class="section-title">Pipeline stages</h2>
+    <div class="stage-track">
+      <div class="stage-node" *ngFor="let stage of stages">
+        <div class="stage-dot"></div>
+        <p class="stage-title">{{ stage.name }}</p>
+        <p class="stage-meta">{{ stage.description }}</p>
       </div>
-      <ol class="stage-list">
-        <li class="stage" *ngFor="let stage of stages">
-          <div class="stage-index"></div>
-          <div>
-            <p class="stage-title">{{ stage.name }}</p>
-            <p class="stage-meta">{{ stage.description }}</p>
+    </div>
+  </section>
+
+  <section class="module-layout">
+    <main class="module-main">
+      <div class="panel" data-animate>
+        <h2>Stage KPIs &amp; SLAs</h2>
+        <p class="panel-subtitle">
+          Target conversion and SLA benchmarks per pipeline stage.
+        </p>
+        <div class="kpi-grid">
+          <div class="kpi-card" *ngFor="let target of stageTargets">
+            <p class="kpi-stage">{{ target.stage }}</p>
+            <p class="kpi-value">{{ target.targetConversion }}</p>
+            <p class="kpi-meta">{{ target.slaDays }} day SLA</p>
           </div>
-        </li>
-      </ol>
-    </div>
-
-    <div class="panel accent" data-animate>
-      <h2>Source tracking</h2>
-      <p class="panel-subtitle">
-        Understand which motions create the most qualified opportunities.
-      </p>
-      <div class="source-grid">
-        <div class="source-card" *ngFor="let source of sourceMetrics">
-          <p class="source-title">{{ source.source }}</p>
-          <p class="source-share">{{ source.share }}</p>
-          <p class="source-note">{{ source.note }}</p>
         </div>
       </div>
-      <div class="source-footer">
-        <span>Lead quality scorecards</span>
-        <span>UTM + campaign attribution</span>
-      </div>
-    </div>
+    </main>
 
-    <div class="panel" data-animate>
-      <h2>Stage KPIs &amp; SLAs</h2>
-      <p class="panel-subtitle">
-        Target conversion and SLA benchmarks per pipeline stage.
-      </p>
-      <div class="kpi-grid">
-        <div class="kpi-card" *ngFor="let target of stageTargets">
-          <p class="kpi-stage">{{ target.stage }}</p>
-          <p class="kpi-value">{{ target.targetConversion }}</p>
-          <p class="kpi-meta">{{ target.slaDays }} day SLA</p>
+    <aside class="module-aside">
+      <div class="panel accent" data-animate>
+        <h2>Source tracking</h2>
+        <p class="panel-subtitle">
+          Understand which motions create the most qualified opportunities.
+        </p>
+        <div class="source-grid">
+          <div class="source-card" *ngFor="let source of sourceMetrics">
+            <p class="source-title">{{ source.source }}</p>
+            <p class="source-share">{{ source.share }}</p>
+            <p class="source-note">{{ source.note }}</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span>Lead quality scorecards</span>
+          <span>UTM + campaign attribution</span>
         </div>
       </div>
-    </div>
+    </aside>
+  </section>
 
-    <div class="panel" data-animate>
-      <h2>Create project</h2>
+  <div class="modal-overlay" *ngIf="showProjectModal" (click)="closeModals()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Create project</h2>
+        <button class="modal-close" type="button" (click)="closeModals()">✕</button>
+      </div>
       <p class="panel-subtitle">
         Add new projects to track outreach activity and opportunities.
       </p>
@@ -113,85 +137,124 @@
             </option>
           </select>
         </label>
-        <button class="btn btn-primary" type="submit">Add project</button>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" type="button" (click)="closeModals()">Cancel</button>
+          <button class="btn btn-primary" type="submit">Add project</button>
+        </div>
       </form>
     </div>
+  </div>
 
-    <div class="panel" data-animate>
-      <h2>Project opportunities</h2>
+  <div class="modal-overlay" *ngIf="showOpportunityModal" (click)="closeModals()">
+    <div class="modal modal-wide" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Project opportunities</h2>
+        <button class="modal-close" type="button" (click)="closeModals()">✕</button>
+      </div>
       <p class="panel-subtitle">
-        Select a project and add opportunities to the pipeline.
+        Filter by stage to see which projects are active.
       </p>
-      <label class="field">
-        <span>Project</span>
-        <select [(ngModel)]="selectedProjectId">
-          <option *ngFor="let project of projects" [value]="project.id">
-            {{ project.name }} · {{ project.customer }}
-          </option>
-        </select>
-      </label>
-      <div class="project-meta" *ngIf="activeProject">
-        <div>
-          <p class="meta-label">Owner</p>
-          <p class="meta-value">{{ activeProject.owner }}</p>
+      <div class="filter-row" *ngIf="!stageFilterLocked">
+        <span class="filter-label">Filter</span>
+        <div class="filter-chip" [class.active]="selectedStageFilter === 'All'" (click)="selectedStageFilter = 'All'">
+          All stages
         </div>
-        <div>
-          <p class="meta-label">Status</p>
-          <p class="meta-value">{{ activeProject.status }}</p>
+        <div
+          class="filter-chip"
+          *ngFor="let stage of stageNames"
+          [class.active]="selectedStageFilter === stage"
+          (click)="selectedStageFilter = stage"
+        >
+          {{ stage }}
         </div>
       </div>
-      <form class="opportunity-form" (ngSubmit)="addOpportunity()">
+      <div class="filter-row" *ngIf="stageFilterLocked">
+        <span class="filter-label">Filtered stage</span>
+        <div class="filter-chip active">
+          {{ selectedStageFilter }}
+        </div>
+      </div>
+      <div *ngIf="!stageFilterLocked">
         <label class="field">
-          <span>Opportunity name</span>
-          <input
-            type="text"
-            placeholder="ex: Regional rollout"
-            [(ngModel)]="newOpportunity.name"
-            name="opportunityName"
-            required
-          >
-        </label>
-        <label class="field">
-          <span>Stage</span>
-          <select [(ngModel)]="newOpportunity.stage" name="opportunityStage">
-            <option *ngFor="let stage of stageNames" [value]="stage">{{ stage }}</option>
+          <span>Project</span>
+          <select [(ngModel)]="selectedProjectId">
+            <option *ngFor="let project of projects" [value]="project.id">
+              {{ project.name }} · {{ project.customer }}
+            </option>
           </select>
         </label>
-        <label class="field">
-          <span>Source</span>
-          <select [(ngModel)]="newOpportunity.source" name="opportunitySource">
-            <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>Est. value</span>
-          <input
-            type="number"
-            min="0"
-            step="1000"
-            [(ngModel)]="newOpportunity.value"
-            name="opportunityValue"
-          >
-        </label>
-        <button class="btn btn-primary" type="submit">Add opportunity</button>
-      </form>
-      <div class="opportunity-list">
-        <div class="opportunity" *ngFor="let opportunity of filteredOpportunities">
+        <div class="project-meta" *ngIf="activeProject">
           <div>
-            <p class="opportunity-title">{{ opportunity.name }}</p>
-            <p class="opportunity-meta">
-              {{ opportunity.stage }} · {{ opportunity.source }}
+            <p class="meta-label">Owner</p>
+            <p class="meta-value">{{ activeProject.owner }}</p>
+          </div>
+          <div>
+            <p class="meta-label">Status</p>
+            <p class="meta-value">{{ activeProject.status }}</p>
+          </div>
+        </div>
+        <form class="opportunity-form" (ngSubmit)="addOpportunity()">
+          <label class="field">
+            <span>Opportunity name</span>
+            <input
+              type="text"
+              placeholder="ex: Regional rollout"
+              [(ngModel)]="newOpportunity.name"
+              name="opportunityName"
+              required
+            >
+          </label>
+          <div class="field-grid">
+            <label class="field">
+              <span>Stage</span>
+              <select [(ngModel)]="newOpportunity.stage" name="opportunityStage">
+                <option *ngFor="let stage of stageNames" [value]="stage">{{ stage }}</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Source</span>
+              <select [(ngModel)]="newOpportunity.source" name="opportunitySource">
+                <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Est. value</span>
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                [(ngModel)]="newOpportunity.value"
+                name="opportunityValue"
+              >
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" type="button" (click)="closeModals()">Close</button>
+            <button class="btn btn-primary" type="submit">Add opportunity</button>
+          </div>
+        </form>
+      </div>
+      <div class="project-list">
+        <div class="project-row" *ngFor="let project of modalProjects">
+          <div>
+            <p class="project-title">{{ project.name }}</p>
+            <p class="project-meta">
+              {{ project.customer }} · {{ project.owner }}
             </p>
           </div>
-          <div class="opportunity-value">
-            ₹{{ opportunity.value | number }}
-            <span>Updated {{ opportunity.updatedAt }}</span>
+          <div class="project-stats">
+            <p>{{ project.opportunityCount }} opps</p>
+            <span>₹{{ project.totalValue | number }}</span>
+            <span>Status: {{ project.status }}</span>
           </div>
         </div>
-        <p class="empty-state" *ngIf="filteredOpportunities.length === 0">
-          No opportunities yet. Add the first one above.
+        <p class="empty-state" *ngIf="modalProjects.length === 0">
+          No projects yet for this stage.
         </p>
       </div>
+      <div class="modal-actions" *ngIf="stageFilterLocked">
+        <button class="btn btn-secondary" type="button" (click)="closeModals()">Close</button>
+      </div>
     </div>
-  </section>
+  </div>
 </div>
