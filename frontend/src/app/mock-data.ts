@@ -27,6 +27,24 @@ export interface ImpactStat {
   meta: string;
 }
 
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  customer: string;
+  owner: string;
+  status: string;
+}
+
+export interface Opportunity {
+  id: string;
+  projectId: string;
+  name: string;
+  stage: string;
+  source: string;
+  value: number;
+  updatedAt: string;
+}
+
 export const HERO_METRICS: Metric[] = [
   { value: '12', label: 'apps live' },
   { value: '6', label: 'modules' },
@@ -115,4 +133,67 @@ export const IMPACT_STATS: ImpactStat[] = [
   { label: 'Velocity', value: '-32%', meta: 'Cycle time reduction' },
   { label: 'Accuracy', value: '+21%', meta: 'Forecast confidence' },
   { label: 'Efficiency', value: '$1.8M', meta: 'Annualized savings' }
+];
+
+export const OUTREACH_PROJECTS: ProjectSummary[] = [
+  {
+    id: 'proj-001',
+    name: 'Apollo Retail Expansion',
+    customer: 'Apollo Retail',
+    owner: 'Ananya Rao',
+    status: 'Active'
+  },
+  {
+    id: 'proj-002',
+    name: 'Nimbus Warehouse Upgrade',
+    customer: 'Nimbus Logistics',
+    owner: 'Rahul Mehta',
+    status: 'Discovery'
+  },
+  {
+    id: 'proj-003',
+    name: 'Helios Supply Refresh',
+    customer: 'Helios Energy',
+    owner: 'Sana Patel',
+    status: 'Proposal'
+  }
+];
+
+export const OUTREACH_OPPORTUNITIES: Opportunity[] = [
+  {
+    id: 'opp-1001',
+    projectId: 'proj-001',
+    name: 'Store rollout phase 1',
+    stage: 'Qualified',
+    source: 'Referral',
+    value: 420000,
+    updatedAt: '2025-01-05'
+  },
+  {
+    id: 'opp-1002',
+    projectId: 'proj-001',
+    name: 'Smart shelving pilot',
+    stage: 'Proposal',
+    source: 'Event',
+    value: 180000,
+    updatedAt: '2025-01-12'
+  },
+  {
+    id: 'opp-2001',
+    projectId: 'proj-002',
+    name: 'Automation audit',
+    stage: 'Requirement Gathering',
+    source: 'Inbound',
+    value: 95000,
+    updatedAt: '2025-01-09'
+  },
+  {
+    id: 'opp-3001',
+    projectId: 'proj-003',
+    name: 'Fleet replacement program',
+    stage: 'Negotiation',
+    source: 'Event',
+    value: 610000,
+    updatedAt: '2025-01-16'
+  }
 ];

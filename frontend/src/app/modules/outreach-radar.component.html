@@ -21,6 +21,12 @@
       <p class="panel-subtitle">
         Standardized stages that move leads into delivery without losing context.
       </p>
+      <div class="stage-counts">
+        <div class="stage-count" *ngFor="let item of stageCounts">
+          <p class="stage-count-label">{{ item.stage }}</p>
+          <p class="stage-count-value">{{ item.count }}</p>
+        </div>
+      </div>
       <ol class="stage-list">
         <li class="stage" *ngFor="let stage of stages">
           <div class="stage-index"></div>
@@ -38,7 +44,7 @@
         Understand which motions create the most qualified opportunities.
       </p>
       <div class="source-grid">
-        <div class="source-card" *ngFor="let source of sources">
+        <div class="source-card" *ngFor="let source of sourceMetrics">
           <p class="source-title">{{ source.source }}</p>
           <p class="source-share">{{ source.share }}</p>
           <p class="source-note">{{ source.note }}</p>
@@ -47,6 +53,144 @@
       <div class="source-footer">
         <span>Lead quality scorecards</span>
         <span>UTM + campaign attribution</span>
+      </div>
+    </div>
+
+    <div class="panel" data-animate>
+      <h2>Stage KPIs &amp; SLAs</h2>
+      <p class="panel-subtitle">
+        Target conversion and SLA benchmarks per pipeline stage.
+      </p>
+      <div class="kpi-grid">
+        <div class="kpi-card" *ngFor="let target of stageTargets">
+          <p class="kpi-stage">{{ target.stage }}</p>
+          <p class="kpi-value">{{ target.targetConversion }}</p>
+          <p class="kpi-meta">{{ target.slaDays }} day SLA</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" data-animate>
+      <h2>Create project</h2>
+      <p class="panel-subtitle">
+        Add new projects to track outreach activity and opportunities.
+      </p>
+      <form class="project-form" (ngSubmit)="addProject()">
+        <label class="field">
+          <span>Project name</span>
+          <input
+            type="text"
+            placeholder="ex: Harbor DC rollout"
+            [(ngModel)]="newProject.name"
+            name="projectName"
+            required
+          >
+        </label>
+        <label class="field">
+          <span>Customer</span>
+          <input
+            type="text"
+            placeholder="ex: Harbor Group"
+            [(ngModel)]="newProject.customer"
+            name="projectCustomer"
+            required
+          >
+        </label>
+        <label class="field">
+          <span>Owner</span>
+          <input
+            type="text"
+            placeholder="ex: Priya Nair"
+            [(ngModel)]="newProject.owner"
+            name="projectOwner"
+          >
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <select [(ngModel)]="newProject.status" name="projectStatus">
+            <option *ngFor="let status of projectStatuses" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Add project</button>
+      </form>
+    </div>
+
+    <div class="panel" data-animate>
+      <h2>Project opportunities</h2>
+      <p class="panel-subtitle">
+        Select a project and add opportunities to the pipeline.
+      </p>
+      <label class="field">
+        <span>Project</span>
+        <select [(ngModel)]="selectedProjectId">
+          <option *ngFor="let project of projects" [value]="project.id">
+            {{ project.name }} · {{ project.customer }}
+          </option>
+        </select>
+      </label>
+      <div class="project-meta" *ngIf="activeProject">
+        <div>
+          <p class="meta-label">Owner</p>
+          <p class="meta-value">{{ activeProject.owner }}</p>
+        </div>
+        <div>
+          <p class="meta-label">Status</p>
+          <p class="meta-value">{{ activeProject.status }}</p>
+        </div>
+      </div>
+      <form class="opportunity-form" (ngSubmit)="addOpportunity()">
+        <label class="field">
+          <span>Opportunity name</span>
+          <input
+            type="text"
+            placeholder="ex: Regional rollout"
+            [(ngModel)]="newOpportunity.name"
+            name="opportunityName"
+            required
+          >
+        </label>
+        <label class="field">
+          <span>Stage</span>
+          <select [(ngModel)]="newOpportunity.stage" name="opportunityStage">
+            <option *ngFor="let stage of stageNames" [value]="stage">{{ stage }}</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Source</span>
+          <select [(ngModel)]="newOpportunity.source" name="opportunitySource">
+            <option *ngFor="let source of sources" [value]="source">{{ source }}</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Est. value</span>
+          <input
+            type="number"
+            min="0"
+            step="1000"
+            [(ngModel)]="newOpportunity.value"
+            name="opportunityValue"
+          >
+        </label>
+        <button class="btn btn-primary" type="submit">Add opportunity</button>
+      </form>
+      <div class="opportunity-list">
+        <div class="opportunity" *ngFor="let opportunity of filteredOpportunities">
+          <div>
+            <p class="opportunity-title">{{ opportunity.name }}</p>
+            <p class="opportunity-meta">
+              {{ opportunity.stage }} · {{ opportunity.source }}
+            </p>
+          </div>
+          <div class="opportunity-value">
+            ₹{{ opportunity.value | number }}
+            <span>Updated {{ opportunity.updatedAt }}</span>
+          </div>
+        </div>
+        <p class="empty-state" *ngIf="filteredOpportunities.length === 0">
+          No opportunities yet. Add the first one above.
+        </p>
       </div>
     </div>
   </section>

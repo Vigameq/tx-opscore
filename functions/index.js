@@ -126,6 +126,81 @@ const modules = [
   },
 ];
 
+const mockProjects = [
+  {
+    id: "proj-001",
+    name: "Apollo Retail Expansion",
+    customer: "Apollo Retail",
+    owner: "Ananya Rao",
+    status: "Active",
+  },
+  {
+    id: "proj-002",
+    name: "Nimbus Warehouse Upgrade",
+    customer: "Nimbus Logistics",
+    owner: "Rahul Mehta",
+    status: "Discovery",
+  },
+  {
+    id: "proj-003",
+    name: "Helios Supply Refresh",
+    customer: "Helios Energy",
+    owner: "Sana Patel",
+    status: "Proposal",
+  },
+];
+
+let mockOpportunities = [
+  {
+    id: "opp-1001",
+    project_id: "proj-001",
+    name: "Store rollout phase 1",
+    stage: "Qualified",
+    source: "Referral",
+    value: 420000,
+    updated_at: "2025-01-05",
+  },
+  {
+    id: "opp-1002",
+    project_id: "proj-001",
+    name: "Smart shelving pilot",
+    stage: "Proposal",
+    source: "Event",
+    value: 180000,
+    updated_at: "2025-01-12",
+  },
+  {
+    id: "opp-2001",
+    project_id: "proj-002",
+    name: "Automation audit",
+    stage: "Requirement Gathering",
+    source: "Inbound",
+    value: 95000,
+    updated_at: "2025-01-09",
+  },
+  {
+    id: "opp-3001",
+    project_id: "proj-003",
+    name: "Fleet replacement program",
+    stage: "Negotiation",
+    source: "Event",
+    value: 610000,
+    updated_at: "2025-01-16",
+  },
+];
+
+const allowedStages = new Set([
+  "New",
+  "Qualified",
+  "Requirement Gathering",
+  "Proposal",
+  "Negotiation",
+  "PO",
+  "Execution",
+]);
+
+const allowedSources = new Set(["Event", "Referral", "Inbound"]);
+
 app.get("/health", async (_req, res) => {
   const status = {
     ok: true,
@@ -149,6 +224,156 @@ app.get("/health", async (_req, res) => {
 
 app.get("/api/modules", (_req, res) => {
   res.json({ modules });
+});
+
+app.get("/api/projects", async (_req, res) => {
+  if (!process.env.PGHOST) {
+    return res.json({ projects: mockProjects });
+  }
+
+  try {
+    const result = await getPool().query(
+      "SELECT id, name, customer_name AS customer, owner_name AS owner, status FROM projects ORDER BY created_at DESC"
+    );
+    res.json({ projects: result.rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/projects", async (req, res) => {
+  const { name, customer, owner, status } = req.body || {};
+
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({ error: "name is required." });
+  }
+
+  if (!customer || typeof customer !== "string") {
+    return res.status(400).json({ error: "customer is required." });
+  }
+
+  const safeOwner = typeof owner === "string" && owner.trim() ? owner.trim() : "Unassigned";
+  const safeStatus = typeof status === "string" && status.trim() ? status.trim() : "Discovery";
+
+  if (!process.env.PGHOST) {
+    const id = `proj-${Date.now()}`;
+    const project = {
+      id,
+      name: name.trim(),
+      customer: customer.trim(),
+      owner: safeOwner,
+      status: safeStatus,
+    };
+    mockProjects.unshift(project);
+    return res.status(201).json({ project });
+  }
+
+  try {
+    const id = `proj-${Date.now()}`;
+    const result = await getPool().query(
+      "INSERT INTO projects (id, name, customer_name, owner_name, status) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, customer_name AS customer, owner_name AS owner, status",
+      [id, name.trim(), customer.trim(), safeOwner, safeStatus]
+    );
+    res.status(201).json({ project: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/api/projects/:projectId/opportunities", async (req, res) => {
+  const { projectId } = req.params;
+
+  if (!projectId) {
+    return res.status(400).json({ error: "projectId is required." });
+  }
+
+  if (!process.env.PGHOST) {
+    const opportunities = mockOpportunities
+      .filter((item) => item.project_id === projectId)
+      .map((item) => ({
+        id: item.id,
+        projectId: item.project_id,
+        name: item.name,
+        stage: item.stage,
+        source: item.source,
+        value: item.value,
+        updatedAt: item.updated_at,
+      }));
+
+    return res.json({ opportunities });
+  }
+
+  try {
+    const result = await getPool().query(
+      "SELECT id, project_id AS \"projectId\", name, stage, source, value, updated_at AS \"updatedAt\" FROM opportunities WHERE project_id = $1 ORDER BY updated_at DESC",
+      [projectId]
+    );
+    res.json({ opportunities: result.rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/projects/:projectId/opportunities", async (req, res) => {
+  const { projectId } = req.params;
+  const { name, stage, source, value } = req.body || {};
+
+  if (!projectId) {
+    return res.status(400).json({ error: "projectId is required." });
+  }
+
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({ error: "name is required." });
+  }
+
+  if (!allowedStages.has(stage)) {
+    return res.status(400).json({ error: "stage is invalid." });
+  }
+
+  if (!allowedSources.has(source)) {
+    return res.status(400).json({ error: "source is invalid." });
+  }
+
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue) || numericValue < 0) {
+    return res.status(400).json({ error: "value must be a positive number." });
+  }
+
+  if (!process.env.PGHOST) {
+    const id = `opp-${Date.now()}`;
+    const record = {
+      id,
+      project_id: projectId,
+      name: name.trim(),
+      stage,
+      source,
+      value: numericValue,
+      updated_at: new Date().toISOString().slice(0, 10),
+    };
+    mockOpportunities = [record, ...mockOpportunities];
+
+    return res.status(201).json({
+      opportunity: {
+        id: record.id,
+        projectId: record.project_id,
+        name: record.name,
+        stage: record.stage,
+        source: record.source,
+        value: record.value,
+        updatedAt: record.updated_at,
+      },
+    });
+  }
+
+  try {
+    const result = await getPool().query(
+      "INSERT INTO opportunities (project_id, name, stage, source, value) VALUES ($1, $2, $3, $4, $5) RETURNING id, project_id AS \"projectId\", name, stage, source, value, updated_at AS \"updatedAt\"",
+      [projectId, name.trim(), stage, source, numericValue]
+    );
+    res.status(201).json({ opportunity: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.post("/api/uploads/sign", async (req, res) => {

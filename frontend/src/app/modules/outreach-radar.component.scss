@@ -89,6 +89,33 @@
   margin-bottom: 18px;
 }
 
+.stage-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stage-count {
+  background: var(--bg-alt);
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stage-count-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.stage-count-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
 .stage-list {
   list-style: none;
   display: grid;
@@ -159,6 +186,125 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--accent-2);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.kpi-card {
+  background: var(--bg-alt);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.kpi-stage {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.kpi-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 6px 0;
+}
+
+.kpi-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.field input,
+.field select {
+  background: var(--bg-alt);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.project-meta {
+  display: flex;
+  gap: 24px;
+  margin: 12px 0 18px;
+}
+
+.meta-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.meta-value {
+  font-weight: 600;
+}
+
+.opportunity-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.project-form {
+  display: grid;
+  gap: 12px;
+}
+
+.opportunity-list {
+  display: grid;
+  gap: 12px;
+}
+
+.opportunity {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  background: rgba(15, 27, 30, 0.6);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.opportunity-title {
+  font-weight: 600;
+}
+
+.opportunity-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.opportunity-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+.opportunity-value span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 720px) {
