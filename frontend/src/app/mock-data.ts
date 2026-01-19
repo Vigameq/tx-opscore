@@ -70,7 +70,8 @@ export const MODULES: ModuleCard[] = [
     icon: 'RC',
     name: 'Requirement Capture',
     description: 'Structured intake, discovery playbooks, and stakeholder alignment.',
-    tags: ['Live', 'Templates']
+    tags: ['Live', 'Templates'],
+    route: '/modules/requirement-capture'
   },
   {
     icon: 'SO',

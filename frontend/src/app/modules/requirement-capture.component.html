@@ -1,0 +1,228 @@
+<div class="module-page">
+  <header class="module-hero" data-animate>
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Capture module</p>
+      <h1>Requirement Capture</h1>
+      <p class="lead">
+        Structured intake for site, rack, power, and compliance inputs. Align
+        stakeholders before solutioning begins.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill" *ngFor="let pill of summaryPills">
+          {{ pill.label }}: {{ pill.value }}
+        </span>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" type="button" (click)="openModal()">
+          New requirement
+        </button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h2>Site readiness snapshot</h2>
+      <p class="panel-subtitle">
+        Track constraints, timelines, and critical dependencies in one view.
+      </p>
+      <div class="snapshot-list">
+        <div class="snapshot-item" *ngFor="let item of sections[0].items">
+          <p class="snapshot-label">{{ item.label }}</p>
+          <p class="snapshot-value">{{ item.value }}</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="captured" data-animate>
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Captured projects</h2>
+        <p class="panel-subtitle">
+          Requirements logged across active engagements.
+        </p>
+      </div>
+      <div class="captured-list">
+        <div class="captured-card" *ngFor="let project of capturedProjects">
+          <div>
+            <p class="captured-title">{{ project.projectName }}</p>
+            <p class="captured-meta">
+              {{ project.location }} · {{ project.timeline }}
+            </p>
+          </div>
+          <div class="captured-status">
+            <span>{{ project.status }}</span>
+            <span>Updated {{ project.updatedAt }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-grid">
+    <div class="panel" data-animate *ngFor="let section of sections">
+      <h2>{{ section.title }}</h2>
+      <div class="info-list">
+        <div class="info-row" *ngFor="let item of section.items">
+          <p class="info-label">{{ item.label }}</p>
+          <p class="info-value">{{ item.value }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="attachments" data-animate>
+    <div class="panel accent">
+      <h2>Attachments</h2>
+      <p class="panel-subtitle">
+        Photos, floor plans, and single line diagrams captured per site.
+      </p>
+      <div class="attachment-list">
+        <div class="attachment-card" *ngFor="let file of attachments">
+          <div>
+            <p class="attachment-title">{{ file.name }}</p>
+            <p class="attachment-meta">{{ file.detail }}</p>
+          </div>
+          <span class="attachment-pill">Uploaded</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>New requirement</h2>
+      <button class="modal-close" type="button" (click)="closeModal()">✕</button>
+    </div>
+    <p class="panel-subtitle">
+      Capture site, rack, power, and compliance details for a project.
+    </p>
+    <form class="requirement-form" (ngSubmit)="submitRequirement()">
+      <div class="form-grid">
+        <label class="field">
+          <span>Project name</span>
+          <input type="text" [(ngModel)]="formData.projectName" name="projectName" required>
+        </label>
+        <label class="field">
+          <span>Location</span>
+          <input type="text" [(ngModel)]="formData.location" name="location">
+        </label>
+        <label class="field">
+          <span>Timelines</span>
+          <input type="text" [(ngModel)]="formData.timeline" name="timeline">
+        </label>
+        <label class="field">
+          <span>Constraints</span>
+          <input type="text" [(ngModel)]="formData.constraints" name="constraints">
+        </label>
+      </div>
+
+      <h3>Rack requirements</h3>
+      <div class="form-grid">
+        <label class="field">
+          <span>Count</span>
+          <input type="text" [(ngModel)]="formData.rackCount" name="rackCount">
+        </label>
+        <label class="field">
+          <span>U height</span>
+          <input type="text" [(ngModel)]="formData.rackU" name="rackU">
+        </label>
+        <label class="field">
+          <span>Depth</span>
+          <input type="text" [(ngModel)]="formData.rackDepth" name="rackDepth">
+        </label>
+        <label class="field">
+          <span>Load rating</span>
+          <input type="text" [(ngModel)]="formData.rackLoad" name="rackLoad">
+        </label>
+        <label class="field">
+          <span>Door type</span>
+          <input type="text" [(ngModel)]="formData.rackDoor" name="rackDoor">
+        </label>
+      </div>
+
+      <h3>IT load</h3>
+      <div class="form-grid">
+        <label class="field">
+          <span>kW per rack</span>
+          <input type="text" [(ngModel)]="formData.itLoad" name="itLoad">
+        </label>
+        <label class="field">
+          <span>Redundancy</span>
+          <input type="text" [(ngModel)]="formData.redundancy" name="redundancy">
+        </label>
+        <label class="field">
+          <span>A/B feeds</span>
+          <input type="text" [(ngModel)]="formData.feeds" name="feeds">
+        </label>
+      </div>
+
+      <h3>Power</h3>
+      <div class="form-grid">
+        <label class="field">
+          <span>PDU type</span>
+          <input type="text" [(ngModel)]="formData.pduType" name="pduType">
+        </label>
+        <label class="field">
+          <span>Plug types</span>
+          <input type="text" [(ngModel)]="formData.plugTypes" name="plugTypes">
+        </label>
+        <label class="field">
+          <span>Outlet count</span>
+          <input type="text" [(ngModel)]="formData.outletCount" name="outletCount">
+        </label>
+        <label class="field">
+          <span>Busbar requirements</span>
+          <input type="text" [(ngModel)]="formData.busbar" name="busbar">
+        </label>
+      </div>
+
+      <h3>Cooling / containment</h3>
+      <div class="form-grid">
+        <label class="field">
+          <span>Hot/Cold aisle</span>
+          <input type="text" [(ngModel)]="formData.cooling" name="cooling">
+        </label>
+        <label class="field">
+          <span>RDHx readiness</span>
+          <input type="text" [(ngModel)]="formData.rdhx" name="rdhx">
+        </label>
+        <label class="field">
+          <span>Airflow direction</span>
+          <input type="text" [(ngModel)]="formData.airflow" name="airflow">
+        </label>
+      </div>
+
+      <h3>Compliance & services</h3>
+      <div class="form-grid">
+        <label class="field">
+          <span>OCP ORv3</span>
+          <input type="text" [(ngModel)]="formData.compliance" name="compliance">
+        </label>
+        <label class="field">
+          <span>IEC/IS standards</span>
+          <input type="text" [(ngModel)]="formData.iec" name="iec">
+        </label>
+        <label class="field">
+          <span>Fire safety</span>
+          <input type="text" [(ngModel)]="formData.fireSafety" name="fireSafety">
+        </label>
+        <label class="field">
+          <span>Services</span>
+          <input type="text" [(ngModel)]="formData.services" name="services">
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Attachments</span>
+        <input type="text" [(ngModel)]="formData.attachments" name="attachments">
+      </label>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" type="button" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" type="submit">Save requirement</button>
+      </div>
+    </form>
+  </div>
+</div>
