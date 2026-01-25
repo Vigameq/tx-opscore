@@ -33,39 +33,37 @@
     </div>
   </header>
 
-  <section class="captured" data-animate>
-    <div class="panel">
+  <section class="captured">
+    <div class="panel" data-animate>
       <div class="panel-header">
-        <h2>Captured projects</h2>
-        <p class="panel-subtitle">
-          Requirements logged across active engagements.
-        </p>
+        <div>
+          <h2>Captured projects</h2>
+          <p class="panel-subtitle">
+            Requirements logged across active engagements.
+          </p>
+        </div>
       </div>
-      <div class="captured-list">
-        <div class="captured-card" *ngFor="let project of capturedProjects">
+      <div class="captured-grid">
+        <article class="captured-card" *ngFor="let project of capturedProjects" (click)="openRequirement(project)">
+          <div class="captured-header">
+            <span class="captured-type">{{ project.requirementType || 'Unknown' }}</span>
+            <span class="captured-status-pill" [ngClass]="getStatusClass(project.status)">
+              {{ project.status || 'Unknown' }}
+            </span>
+          </div>
           <div>
-            <p class="captured-title">{{ project.projectName }}</p>
+            <p class="captured-title">{{ project.projectName || 'Unnamed project' }}</p>
             <p class="captured-meta">
-              {{ project.location }} · {{ project.timeline }}
+              {{ project.location || 'TBD' }} · {{ project.timeline || 'TBD' }}
             </p>
           </div>
-          <div class="captured-status">
-            <span>{{ project.status }}</span>
-            <span>Updated {{ project.updatedAt }}</span>
+          <div class="captured-footer">
+            <span>Updated {{ project.updatedAt || 'unknown' }}</span>
+            <button class="link-button" type="button" (click)="exportRequirements(project); $event.stopPropagation()">
+              Export PDF
+            </button>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-grid">
-    <div class="panel" data-animate *ngFor="let section of sections">
-      <h2>{{ section.title }}</h2>
-      <div class="info-list">
-        <div class="info-row" *ngFor="let item of section.items">
-          <p class="info-label">{{ item.label }}</p>
-          <p class="info-value">{{ item.value }}</p>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -105,12 +103,24 @@
           <input type="text" [(ngModel)]="formData.projectName" name="projectName" required>
         </label>
         <label class="field">
+          <span>New requirement</span>
+          <select [(ngModel)]="formData.requirementType" name="requirementType">
+            <option>Racks Enclosure</option>
+            <option>Micro Data Center</option>
+            <option>GCC</option>
+            <option>PDU's</option>
+            <option>Container DC</option>
+            <option>TierAI Tool</option>
+            <option>Others</option>
+          </select>
+        </label>
+        <label class="field">
           <span>Location</span>
           <input type="text" [(ngModel)]="formData.location" name="location">
         </label>
         <label class="field">
           <span>Timelines</span>
-          <input type="text" [(ngModel)]="formData.timeline" name="timeline">
+          <input type="date" [(ngModel)]="formData.timeline" name="timeline">
         </label>
         <label class="field">
           <span>Constraints</span>
@@ -118,111 +128,355 @@
         </label>
       </div>
 
-      <h3>Rack requirements</h3>
-      <div class="form-grid">
+      <div *ngIf="formData.requirementType !== 'GCC'">
+        <div *ngIf="showRackSection">
+          <h3>Rack requirements</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>Count</span>
+              <input type="text" [(ngModel)]="formData.rackCount" name="rackCount">
+            </label>
+            <label class="field">
+              <span>U height</span>
+              <input type="text" [(ngModel)]="formData.rackU" name="rackU">
+            </label>
+            <label class="field">
+              <span>Depth (mm)</span>
+              <input type="text" [(ngModel)]="formData.rackDepth" name="rackDepth">
+            </label>
+            <label class="field">
+              <span>Load rating</span>
+              <input type="text" [(ngModel)]="formData.rackLoad" name="rackLoad">
+            </label>
+            <label class="field">
+              <span>Door type</span>
+              <input type="text" [(ngModel)]="formData.rackDoor" name="rackDoor">
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="showItLoadSection">
+          <h3>IT load</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>kW per rack</span>
+              <input type="text" [(ngModel)]="formData.itLoad" name="itLoad">
+            </label>
+            <label class="field">
+              <span>Redundancy</span>
+              <input type="text" [(ngModel)]="formData.redundancy" name="redundancy">
+            </label>
+            <label class="field">
+              <span>A/B feeds</span>
+              <input type="text" [(ngModel)]="formData.feeds" name="feeds">
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="showPduContext">
+          <h3>Rack &amp; power context</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>Rack type</span>
+              <input type="text" [(ngModel)]="formData.rackType" name="rackType">
+            </label>
+            <label class="field">
+              <span>Affected racks / range</span>
+              <input type="text" [(ngModel)]="formData.rackRange" name="rackRange">
+            </label>
+            <label class="field">
+              <span>Rack power density</span>
+              <input type="text" [(ngModel)]="formData.itLoad" name="itLoad">
+            </label>
+            <label class="field">
+              <span>Redundancy</span>
+              <input type="text" [(ngModel)]="formData.redundancy" name="redundancy">
+            </label>
+            <label class="field">
+              <span>A/B feeds required</span>
+              <input type="text" [(ngModel)]="formData.feeds" name="feeds">
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="showPowerSection">
+          <h3>Power</h3>
+          <div class="form-grid" *ngIf="!showPduExtras">
+            <label class="field">
+              <span>PDU type</span>
+              <input type="text" [(ngModel)]="formData.pduType" name="pduType">
+            </label>
+            <label class="field">
+              <span>Plug types</span>
+              <input type="text" [(ngModel)]="formData.plugTypes" name="plugTypes">
+            </label>
+            <label class="field">
+              <span>Outlet count</span>
+              <input type="text" [(ngModel)]="formData.outletCount" name="outletCount">
+            </label>
+            <label class="field">
+              <span>Busbar requirements</span>
+              <input type="text" [(ngModel)]="formData.busbar" name="busbar">
+            </label>
+          </div>
+
+          <div class="form-grid" *ngIf="showPduExtras">
+            <label class="field">
+              <span>PDU type</span>
+              <select [(ngModel)]="formData.pduType" name="pduType">
+                <option>Basic (no metering, no network)</option>
+                <option>Metered (local metering)</option>
+                <option>Monitored (networked, PDU-level metering)</option>
+                <option>Switched (remote on/off per outlet)</option>
+                <option>Managed/Intelligent (outlet metering + switching + alerts)</option>
+              </select>
+            </label>
+            <label class="field"><span>Mounting</span><input type="text" [(ngModel)]="formData.pduMounting" name="pduMounting"></label>
+            <label class="field"><span>Phase</span><input type="text" [(ngModel)]="formData.pduPhase" name="pduPhase"></label>
+            <label class="field"><span>Input voltage</span><input type="text" [(ngModel)]="formData.inputVoltage" name="inputVoltage"></label>
+            <label class="field"><span>Current rating (A)</span><input type="text" [(ngModel)]="formData.currentRating" name="currentRating"></label>
+            <label class="field"><span>Input plug type</span><input type="text" [(ngModel)]="formData.inputPlugType" name="inputPlugType"></label>
+            <label class="field"><span>Cord length</span><input type="text" [(ngModel)]="formData.cordLength" name="cordLength"></label>
+            <label class="field"><span>Outlet types</span><input type="text" [(ngModel)]="formData.outletTypes" name="outletTypes"></label>
+            <label class="field"><span>Outlet count</span><input type="text" [(ngModel)]="formData.outletCount" name="outletCount"></label>
+            <label class="field"><span>Mixed outlets</span><input type="text" [(ngModel)]="formData.mixedOutlets" name="mixedOutlets"></label>
+            <label class="field"><span>Locking outlets</span><input type="text" [(ngModel)]="formData.lockingOutlets" name="lockingOutlets"></label>
+            <label class="field"><span>Metering granularity</span><input type="text" [(ngModel)]="formData.meteringGranularity" name="meteringGranularity"></label>
+            <label class="field"><span>Protocols</span><input type="text" [(ngModel)]="formData.protocols" name="protocols"></label>
+            <label class="field"><span>Network ports</span><input type="text" [(ngModel)]="formData.networkPorts" name="networkPorts"></label>
+            <label class="field"><span>Environmental sensors</span><input type="text" [(ngModel)]="formData.envSensors" name="envSensors"></label>
+          </div>
+        </div>
+
+        <div *ngIf="showCoolingSection">
+          <h3>Cooling / containment</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>Hot/Cold aisle</span>
+              <input type="text" [(ngModel)]="formData.cooling" name="cooling">
+            </label>
+            <label class="field">
+              <span>RDHx readiness</span>
+              <input type="text" [(ngModel)]="formData.rdhx" name="rdhx">
+            </label>
+            <label class="field">
+              <span>Airflow direction</span>
+              <input type="text" [(ngModel)]="formData.airflow" name="airflow">
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="showContainerFootprint">
+          <h3>Container / skid footprint</h3>
+          <label class="field">
+            <span>Footprint</span>
+            <input type="text" [(ngModel)]="formData.containerFootprint" name="containerFootprint">
+          </label>
+        </div>
+
+        <div *ngIf="showContainerTransport">
+          <h3>Container dimensions / transport constraints</h3>
+          <label class="field">
+            <span>Transport constraints</span>
+            <input type="text" [(ngModel)]="formData.containerTransportConstraints" name="containerTransportConstraints">
+          </label>
+        </div>
+
+        <h3>Compliance & services</h3>
+        <div class="form-grid">
+          <label class="field">
+            <span>OCP ORv3</span>
+            <input type="text" [(ngModel)]="formData.compliance" name="compliance">
+          </label>
+          <label class="field">
+            <span>IEC/IS standards</span>
+            <input type="text" [(ngModel)]="formData.iec" name="iec">
+          </label>
+          <label class="field">
+            <span>Fire safety</span>
+            <input type="text" [(ngModel)]="formData.fireSafety" name="fireSafety">
+          </label>
+          <label class="field">
+            <span>Services</span>
+            <input type="text" [(ngModel)]="formData.services" name="services">
+          </label>
+        </div>
+
         <label class="field">
-          <span>Count</span>
-          <input type="text" [(ngModel)]="formData.rackCount" name="rackCount">
-        </label>
-        <label class="field">
-          <span>U height</span>
-          <input type="text" [(ngModel)]="formData.rackU" name="rackU">
-        </label>
-        <label class="field">
-          <span>Depth</span>
-          <input type="text" [(ngModel)]="formData.rackDepth" name="rackDepth">
-        </label>
-        <label class="field">
-          <span>Load rating</span>
-          <input type="text" [(ngModel)]="formData.rackLoad" name="rackLoad">
-        </label>
-        <label class="field">
-          <span>Door type</span>
-          <input type="text" [(ngModel)]="formData.rackDoor" name="rackDoor">
+          <span>Attachments</span>
+          <input type="text" [(ngModel)]="formData.attachments" name="attachments">
         </label>
       </div>
 
-      <h3>IT load</h3>
-      <div class="form-grid">
-        <label class="field">
-          <span>kW per rack</span>
-          <input type="text" [(ngModel)]="formData.itLoad" name="itLoad">
-        </label>
-        <label class="field">
-          <span>Redundancy</span>
-          <input type="text" [(ngModel)]="formData.redundancy" name="redundancy">
-        </label>
-        <label class="field">
-          <span>A/B feeds</span>
-          <input type="text" [(ngModel)]="formData.feeds" name="feeds">
-        </label>
-      </div>
+      <div *ngIf="formData.requirementType === 'GCC'">
+        <h3>General project information</h3>
+        <div class="form-grid">
+          <label class="field"><span>Rittal subsidiary</span><input type="text" [(ngModel)]="formData.rittalSubsidiary" name="rittalSubsidiary"></label>
+          <label class="field"><span>Sales representative</span><input type="text" [(ngModel)]="formData.salesRepresentative" name="salesRepresentative"></label>
+          <label class="field"><span>Customer</span><input type="text" [(ngModel)]="formData.customer" name="customer"></label>
+          <label class="field"><span>Project location</span><input type="text" [(ngModel)]="formData.projectLocation" name="projectLocation"></label>
+          <label class="field"><span>Channel of distribution</span><input type="text" [(ngModel)]="formData.channelDistribution" name="channelDistribution"></label>
+        </div>
 
-      <h3>Power</h3>
-      <div class="form-grid">
-        <label class="field">
-          <span>PDU type</span>
-          <input type="text" [(ngModel)]="formData.pduType" name="pduType">
-        </label>
-        <label class="field">
-          <span>Plug types</span>
-          <input type="text" [(ngModel)]="formData.plugTypes" name="plugTypes">
-        </label>
-        <label class="field">
-          <span>Outlet count</span>
-          <input type="text" [(ngModel)]="formData.outletCount" name="outletCount">
-        </label>
-        <label class="field">
-          <span>Busbar requirements</span>
-          <input type="text" [(ngModel)]="formData.busbar" name="busbar">
-        </label>
-      </div>
+        <h3>Offer parameters</h3>
+        <div class="form-grid">
+          <label class="field"><span>Status of the project</span><input type="text" [(ngModel)]="formData.projectStatus" name="projectStatus"></label>
+          <label class="field"><span>Tender</span><input type="text" [(ngModel)]="formData.tender" name="tender"></label>
+          <label class="field"><span>Chance of success</span><input type="text" [(ngModel)]="formData.chanceOfSuccess" name="chanceOfSuccess"></label>
+          <label class="field"><span>Customer's budget</span><input type="text" [(ngModel)]="formData.customerBudget" name="customerBudget"></label>
+          <label class="field"><span>Defined margin of subsidiary</span><input type="text" [(ngModel)]="formData.definedMargin" name="definedMargin"></label>
+          <label class="field"><span>Main competitors</span><input type="text" [(ngModel)]="formData.competitors" name="competitors"></label>
+          <label class="field"><span>Drawing required</span><input type="text" [(ngModel)]="formData.drawingRequired" name="drawingRequired"></label>
+          <label class="field"><span>Commissioning by</span><input type="text" [(ngModel)]="formData.commissioningBy" name="commissioningBy"></label>
+          <label class="field"><span>Incoterm</span><input type="text" [(ngModel)]="formData.incoterm" name="incoterm"></label>
+        </div>
 
-      <h3>Cooling / containment</h3>
-      <div class="form-grid">
-        <label class="field">
-          <span>Hot/Cold aisle</span>
-          <input type="text" [(ngModel)]="formData.cooling" name="cooling">
-        </label>
-        <label class="field">
-          <span>RDHx readiness</span>
-          <input type="text" [(ngModel)]="formData.rdhx" name="rdhx">
-        </label>
-        <label class="field">
-          <span>Airflow direction</span>
-          <input type="text" [(ngModel)]="formData.airflow" name="airflow">
-        </label>
-      </div>
+        <h3>Timeline</h3>
+        <div class="form-grid">
+          <label class="field"><span>Fill-out date</span><input type="text" [(ngModel)]="formData.fillOutDate" name="fillOutDate"></label>
+          <label class="field"><span>Offer to subsidiary until</span><input type="text" [(ngModel)]="formData.offerUntil" name="offerUntil"></label>
+          <label class="field"><span>Expected purchase date</span><input type="text" [(ngModel)]="formData.expectedPurchaseDate" name="expectedPurchaseDate"></label>
+          <label class="field"><span>Realisation starting</span><input type="text" [(ngModel)]="formData.realisationStarting" name="realisationStarting"></label>
+        </div>
 
-      <h3>Compliance & services</h3>
-      <div class="form-grid">
-        <label class="field">
-          <span>OCP ORv3</span>
-          <input type="text" [(ngModel)]="formData.compliance" name="compliance">
-        </label>
-        <label class="field">
-          <span>IEC/IS standards</span>
-          <input type="text" [(ngModel)]="formData.iec" name="iec">
-        </label>
-        <label class="field">
-          <span>Fire safety</span>
-          <input type="text" [(ngModel)]="formData.fireSafety" name="fireSafety">
-        </label>
-        <label class="field">
-          <span>Services</span>
-          <input type="text" [(ngModel)]="formData.services" name="services">
-        </label>
-      </div>
+        <h3>Chances, risks, hints</h3>
+        <label class="field"><span>Notes</span><input type="text" [(ngModel)]="formData.risksHints" name="risksHints"></label>
 
-      <label class="field">
-        <span>Attachments</span>
-        <input type="text" [(ngModel)]="formData.attachments" name="attachments">
-      </label>
+        <h3>Container version</h3>
+        <div class="form-grid">
+          <label class="field"><span>Container version</span><input type="text" [(ngModel)]="formData.containerVersion" name="containerVersion"></label>
+          <label class="field"><span>Customer IT load (kW)</span><input type="text" [(ngModel)]="formData.customersItLoad" name="customersItLoad"></label>
+          <label class="field"><span>Number of IT-Racks</span><input type="text" [(ngModel)]="formData.numberOfItRacks" name="numberOfItRacks"></label>
+          <label class="field"><span>Container dimensions summary</span><input type="text" [(ngModel)]="formData.containerDimensionsSummary" name="containerDimensionsSummary"></label>
+          <label class="field"><span>Supports tier level</span><input type="text" [(ngModel)]="formData.supportsTierLevel" name="supportsTierLevel"></label>
+        </div>
+
+        <h3>Container dimensions (mm)</h3>
+        <div class="form-grid">
+          <label class="field"><span>Length (mm)</span><input type="text" [(ngModel)]="formData.containerLength" name="containerLength"></label>
+          <label class="field"><span>Width (mm)</span><input type="text" [(ngModel)]="formData.containerWidth" name="containerWidth"></label>
+          <label class="field"><span>Height (mm)</span><input type="text" [(ngModel)]="formData.containerHeight" name="containerHeight"></label>
+        </div>
+
+        <h3>Environmental climate conditions</h3>
+        <div class="form-grid">
+          <label class="field"><span>Air temperature max (20 yrs)</span><input type="text" [(ngModel)]="formData.airTempMax" name="airTempMax"></label>
+          <label class="field"><span>Air temperature min (20 yrs)</span><input type="text" [(ngModel)]="formData.airTempMin" name="airTempMin"></label>
+          <label class="field"><span>Air humidity max wet bulb</span><input type="text" [(ngModel)]="formData.airHumidityMax" name="airHumidityMax"></label>
+          <label class="field"><span>Height above sea level</span><input type="text" [(ngModel)]="formData.seaLevelHeight" name="seaLevelHeight"></label>
+        </div>
+
+        <h3>Configuration of the container</h3>
+        <div class="form-grid">
+          <label class="field"><span>Lacquering</span><input type="text" [(ngModel)]="formData.lacquering" name="lacquering"></label>
+          <label class="field"><span>Doors front</span><input type="text" [(ngModel)]="formData.doorsFront" name="doorsFront"></label>
+          <label class="field"><span>Doors rear</span><input type="text" [(ngModel)]="formData.doorsRear" name="doorsRear"></label>
+          <label class="field"><span>Separation walls</span><input type="text" [(ngModel)]="formData.separationWalls" name="separationWalls"></label>
+        </div>
+
+        <h3>Preparation for linkage</h3>
+        <div class="form-grid">
+          <label class="field"><span>Linkage left</span><input type="text" [(ngModel)]="formData.linkageLeft" name="linkageLeft"></label>
+          <label class="field"><span>Linkage right</span><input type="text" [(ngModel)]="formData.linkageRight" name="linkageRight"></label>
+        </div>
+
+        <h3>Ducts for cables and tubes</h3>
+        <div class="form-grid">
+          <label class="field"><span>Ducts</span><input type="text" [(ngModel)]="formData.ductsForCables" name="ductsForCables"></label>
+          <label class="field"><span>Ducts details</span><input type="text" [(ngModel)]="formData.ductsDetails" name="ductsDetails"></label>
+        </div>
+
+        <h3>Overpressure release</h3>
+        <label class="field"><span>Overpressure release</span><input type="text" [(ngModel)]="formData.overpressureRelease" name="overpressureRelease"></label>
+
+        <h3>Air ventilation system</h3>
+        <label class="field"><span>Air ventilation</span><input type="text" [(ngModel)]="formData.airVentilation" name="airVentilation"></label>
+
+        <h3>Container interior design</h3>
+        <label class="field"><span>Interior design</span><input type="text" [(ngModel)]="formData.containerInterior" name="containerInterior"></label>
+
+        <h3>IT server / network racks</h3>
+        <label class="field"><span>IT racks</span><input type="text" [(ngModel)]="formData.itRacks" name="itRacks"></label>
+
+        <h3>Rack accessories</h3>
+        <label class="field"><span>Rack accessories</span><input type="text" [(ngModel)]="formData.rackAccessories" name="rackAccessories"></label>
+
+        <h3>Rack baying connectors</h3>
+        <label class="field"><span>Rack baying connectors</span><input type="text" [(ngModel)]="formData.rackBayingConnectors" name="rackBayingConnectors"></label>
+
+        <h3>Raised floor</h3>
+        <label class="field"><span>Raised floor</span><input type="text" [(ngModel)]="formData.raisedFloor" name="raisedFloor"></label>
+
+        <h3>Switch gear</h3>
+        <label class="field"><span>Switch gear</span><input type="text" [(ngModel)]="formData.switchGear" name="switchGear"></label>
+
+        <h3>Socket strips in the IT racks</h3>
+        <label class="field"><span>Socket strips</span><input type="text" [(ngModel)]="formData.socketStrips" name="socketStrips"></label>
+
+        <h3>Aisle containment</h3>
+        <label class="field"><span>Aisle containment</span><input type="text" [(ngModel)]="formData.aisleContainment" name="aisleContainment"></label>
+
+        <h3>Cooling</h3>
+        <label class="field"><span>Cooling</span><input type="text" [(ngModel)]="formData.cooling" name="cooling"></label>
+
+        <h3>Cooling supply outside of the container</h3>
+        <label class="field"><span>Cooling supply</span><input type="text" [(ngModel)]="formData.coolingSupplyOutside" name="coolingSupplyOutside"></label>
+
+        <h3>CMC monitoring parameters</h3>
+        <label class="field"><span>CMC monitoring</span><input type="text" [(ngModel)]="formData.cmcMonitoring" name="cmcMonitoring"></label>
+
+        <h3>Very early smoke detection apparatus</h3>
+        <label class="field"><span>VESDA</span><input type="text" [(ngModel)]="formData.vesda" name="vesda"></label>
+
+        <h3>Further equipment</h3>
+        <label class="field"><span>Further equipment</span><input type="text" [(ngModel)]="formData.furtherEquipment" name="furtherEquipment"></label>
+
+        <h3>Fire detection and suppression system</h3>
+        <label class="field"><span>Fire suppression</span><input type="text" [(ngModel)]="formData.fireSuppression" name="fireSuppression"></label>
+
+        <h3>Commissioning</h3>
+        <div class="form-grid">
+          <label class="field"><span>Commissioning notes</span><input type="text" [(ngModel)]="formData.commissioningNotes" name="commissioningNotes"></label>
+          <label class="field"><span>Nearest airport</span><input type="text" [(ngModel)]="formData.nearestAirport" name="nearestAirport"></label>
+          <label class="field"><span>Transfer time</span><input type="text" [(ngModel)]="formData.transferTime" name="transferTime"></label>
+          <label class="field"><span>Technician documents</span><input type="text" [(ngModel)]="formData.technicianDocs" name="technicianDocs"></label>
+          <label class="field"><span>Special conditions</span><input type="text" [(ngModel)]="formData.specialConditions" name="specialConditions"></label>
+        </div>
+
+        <h3>Mandatory attachments</h3>
+        <label class="field"><span>Attachments</span><input type="text" [(ngModel)]="formData.mandatoryAttachments" name="mandatoryAttachments"></label>
+      </div>
 
       <div class="modal-actions">
         <button class="btn btn-secondary" type="button" (click)="closeModal()">Cancel</button>
         <button class="btn btn-primary" type="submit">Save requirement</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showViewModal" (click)="closeViewModal()">
+  <div class="modal modal-wide" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Requirement details</h2>
+      <button class="modal-close" type="button" (click)="closeViewModal()">✕</button>
+    </div>
+    <p class="panel-subtitle" *ngIf="selectedRequirement">
+      {{ selectedRequirement.projectName }} · {{ selectedRequirement.requirementType }}
+    </p>
+    <div class="section-grid">
+      <div class="panel" *ngFor="let section of selectedRequirementSections">
+        <h2>{{ section.title }}</h2>
+        <div class="info-list">
+          <div class="info-row" *ngFor="let item of section.items">
+            <p class="info-label">{{ item.label }}</p>
+            <p class="info-value">{{ item.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" type="button" (click)="closeViewModal()">Close</button>
+    </div>
   </div>
 </div>
