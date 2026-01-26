@@ -302,10 +302,19 @@
           </label>
         </div>
 
-        <label class="field">
+        <div class="field">
           <span>Attachments</span>
-          <input type="text" [(ngModel)]="formData.attachments" name="attachments">
-        </label>
+          <label class="upload-button">
+            Upload files
+            <input type="file" multiple (change)="onAttachmentsSelected($event)">
+          </label>
+          <div class="attachment-chips" *ngIf="attachmentFiles.length > 0">
+            <div class="attachment-chip" *ngFor="let file of attachmentFiles; let i = index">
+              <span>{{ file.name }}</span>
+              <button type="button" (click)="removeAttachment(i)">✕</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div *ngIf="formData.requirementType === 'GCC'">

@@ -295,6 +295,7 @@ export class RequirementCaptureComponent implements AfterViewInit {
 
   showModal = false;
   formData: RequirementForm = { ...DEFAULT_FORM_DATA };
+  attachmentFiles: File[] = [];
   showViewModal = false;
   selectedRequirement: RequirementEntry | null = null;
   selectedRequirementSections: RequirementSection[] = [];
@@ -334,6 +335,26 @@ export class RequirementCaptureComponent implements AfterViewInit {
     this.showModal = false;
   }
 
+  onAttachmentsSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+    if (files.length === 0) {
+      return;
+    }
+    this.attachmentFiles = [...this.attachmentFiles, ...files];
+    this.formData.attachments = this.attachmentFiles
+      .map((file) => file.name)
+      .join(', ');
+    input.value = '';
+  }
+
+  removeAttachment(index: number): void {
+    this.attachmentFiles = this.attachmentFiles.filter((_, idx) => idx !== index);
+    this.formData.attachments = this.attachmentFiles
+      .map((file) => file.name)
+      .join(', ');
+  }
+
   closeViewModal(): void {
     this.showViewModal = false;
     this.selectedRequirement = null;
@@ -358,6 +379,7 @@ export class RequirementCaptureComponent implements AfterViewInit {
 
     this.capturedProjects = [entry, ...this.capturedProjects];
     this.formData = { ...DEFAULT_FORM_DATA };
+    this.attachmentFiles = [];
     this.showModal = false;
   }
 

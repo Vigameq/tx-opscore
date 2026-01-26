@@ -1,0 +1,174 @@
+<div class="module-page">
+  <header class="module-hero" data-animate>
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Quotation module</p>
+      <h1>Pre-BOM &amp; Quotation</h1>
+      <p class="lead">
+        Build a configurable pre-BOM from requirements, refine line items, and
+        produce quote-ready outputs before approval.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill" *ngFor="let pill of summary">
+          {{ pill.label }}: {{ pill.value }}
+        </span>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" type="button">Pre-BOM</button>
+        <button class="btn btn-secondary" type="button" (click)="openQuoteModal()">Quotation</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h2>Draft totals</h2>
+      <p class="panel-subtitle">
+        Current draft rollup for the active configuration.
+      </p>
+      <div class="total-card">
+        <p class="total-label">Estimated material + services</p>
+        <p class="total-value">₹{{ totalCost | number }}</p>
+        <p class="total-meta">Excludes tax and logistics</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="section-grid bom-sections" data-animate>
+    <div class="panel" *ngFor="let section of bomSections">
+      <div class="panel-header">
+        <h2>{{ section.title }}</h2>
+        <p class="panel-subtitle">{{ section.subtitle }}</p>
+      </div>
+      <div class="bom-card-table">
+        <div class="bom-card-row bom-card-head">
+          <span>Item</span>
+          <span>Qty</span>
+          <span>Unit</span>
+          <span>Unit cost</span>
+          <span>Notes</span>
+        </div>
+        <div class="bom-card-row" *ngFor="let line of section.items">
+          <span>{{ line.item }}</span>
+          <span>{{ line.qty }}</span>
+          <span>{{ line.unit }}</span>
+          <span>₹{{ line.unitCost | number }}</span>
+          <span>{{ line.notes }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-overlay" *ngIf="showQuoteModal" (click)="closeQuoteModal()">
+  <div class="modal modal-wide light" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create Quotation</h2>
+      <button class="modal-close" type="button" (click)="closeQuoteModal()">✕</button>
+    </div>
+
+    <div class="segmented">
+      <button
+        type="button"
+        class="segmented-btn"
+        [class.active]="customerMode === 'existing'"
+        (click)="customerMode = 'existing'"
+      >
+        Existing Customer
+      </button>
+      <button
+        type="button"
+        class="segmented-btn"
+        [class.active]="customerMode === 'new'"
+        (click)="customerMode = 'new'"
+      >
+        New Customer
+      </button>
+    </div>
+
+    <div class="form-grid" *ngIf="customerMode === 'existing'">
+      <label class="field light">
+        <span>Select Customer</span>
+        <select [(ngModel)]="quoteForm.customer">
+          <option value="">Search Customer…</option>
+          <option>Acme Industries</option>
+          <option>Helios Energy</option>
+          <option>Nimbus Logistics</option>
+        </select>
+      </label>
+      <label class="field light email-field">
+        <span>Customer Email (for sending quote)</span>
+        <input type="email" [(ngModel)]="quoteForm.email" placeholder="customer@example.com">
+      </label>
+      <label class="field light">
+        <span>Valid Until</span>
+        <input type="date" [(ngModel)]="quoteForm.validUntil" lang="en-GB" placeholder="dd-mm-yyyy">
+      </label>
+    </div>
+
+    <div class="form-grid new-customer" *ngIf="customerMode === 'new'">
+      <label class="field light span-2">
+        <span>Customer Email (for sending quote)</span>
+        <input type="email" [(ngModel)]="quoteForm.email" placeholder="customer@example.com">
+      </label>
+      <label class="field light">
+        <span>Customer Name</span>
+        <input type="text" [(ngModel)]="quoteForm.customerName" placeholder="Company Name">
+      </label>
+      <label class="field light">
+        <span>Email</span>
+        <input type="email" [(ngModel)]="quoteForm.contactEmail" placeholder="contact@company.com">
+      </label>
+      <label class="field light">
+        <span>GSTIN</span>
+        <input type="text" [(ngModel)]="quoteForm.gstin" placeholder="GSTIN (Optional)">
+      </label>
+      <label class="field light">
+        <span>Valid Until</span>
+        <input type="date" [(ngModel)]="quoteForm.validUntil" lang="en-GB" placeholder="dd-mm-yyyy">
+      </label>
+    </div>
+
+    <div class="line-items">
+      <div class="line-header">
+        <h3>Line Items</h3>
+        <button class="btn add-btn" type="button" (click)="addLineItem()">+ Add Item</button>
+      </div>
+      <div class="line-row line-head">
+        <span>Item</span>
+        <span>UOM</span>
+        <span>Qty</span>
+        <span>Price (₹)</span>
+        <span>Total</span>
+        <span></span>
+      </div>
+      <div class="line-row" *ngFor="let line of quoteLineItems; let i = index">
+        <select>
+          <option>Select Item</option>
+          <option>Rack enclosure</option>
+          <option>PDU</option>
+          <option>LCP CW</option>
+        </select>
+        <select [(ngModel)]="line.uom">
+          <option>Nos</option>
+          <option>Lot</option>
+          <option>Unit</option>
+        </select>
+        <input type="number" [(ngModel)]="line.qty" min="1">
+        <input type="number" [(ngModel)]="line.price" min="0">
+        <span>₹{{ (line.qty * line.price) | number }}</span>
+        <button class="icon-button" type="button" (click)="removeLineItem(i)" [disabled]="quoteLineItems.length <= 1">
+          ✕
+        </button>
+      </div>
+
+      <div class="line-total">
+        <span>Total Amount:</span>
+        <strong>₹{{ quoteTotal | number }}</strong>
+      </div>
+    </div>
+
+    <div class="modal-actions row">
+      <button class="btn btn-secondary" type="button" (click)="closeQuoteModal()">Cancel</button>
+      <button class="btn green" type="button">Save Draft</button>
+      <button class="btn blue" type="button">Preview &amp; Send</button>
+    </div>
+  </div>
+</div>

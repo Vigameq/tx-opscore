@@ -74,6 +74,13 @@ export const MODULES: ModuleCard[] = [
     route: '/modules/requirement-capture'
   },
   {
+    icon: 'BQ',
+    name: 'Pre-BOM & Quotation',
+    description: 'Build configurable pre-BOMs and generate quote-ready outputs.',
+    tags: ['Draft', 'Estimator'],
+    route: '/modules/pre-bom-quotation'
+  },
+  {
     icon: 'SO',
     name: 'Solution Studio',
     description: 'Design solutions with costing, feasibility, and risk overlays.',
