@@ -23,6 +23,18 @@ export interface PreBomRecord {
   updatedAt: string;
   opportunityId: string;
   snapshot: RequirementSnapshot;
+  finishedGoods?: PreBomFinishedGoodLine[];
+}
+
+export interface PreBomFinishedGoodLine {
+  product_family: string;
+  product_model: string;
+  description: string;
+  quantity: number;
+  uom: string;
+  config_summary?: string;
+  target_unit_price?: number;
+  target_lead_time_weeks?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -66,6 +78,22 @@ export class PreBomStoreService {
     this.records = this.records.map((record) =>
       record.opportunityId === opportunityId
         ? { ...record, status, updatedAt: new Date().toISOString().slice(0, 10) }
+        : record
+    );
+  }
+
+  updateRecordDetails(
+    opportunityId: string,
+    updates: { snapshot?: RequirementSnapshot; finishedGoods?: PreBomFinishedGoodLine[] }
+  ): void {
+    this.records = this.records.map((record) =>
+      record.opportunityId === opportunityId
+        ? {
+            ...record,
+            snapshot: updates.snapshot ?? record.snapshot,
+            finishedGoods: updates.finishedGoods ?? record.finishedGoods,
+            updatedAt: new Date().toISOString().slice(0, 10)
+          }
         : record
     );
   }

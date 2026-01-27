@@ -40,7 +40,7 @@
       <div class="filter-grid">
         <label class="field">
           <span>Customer</span>
-          <select>
+          <select [(ngModel)]="filters.customer">
             <option value="">All customers</option>
             <option>ABC Data Centers</option>
             <option>Nimbus Logistics</option>
@@ -49,7 +49,7 @@
         </label>
         <label class="field">
           <span>Status</span>
-          <select>
+          <select [(ngModel)]="filters.status">
             <option value="">All statuses</option>
             <option>PO_RECEIVED</option>
             <option>PO_VERIFIED</option>
@@ -60,11 +60,14 @@
         </label>
         <label class="field">
           <span>Project</span>
-          <input type="text" placeholder="Search project">
+          <input type="text" placeholder="Search project" [(ngModel)]="filters.project">
         </label>
         <label class="field">
           <span>Date range</span>
-          <input type="date">
+          <div class="date-range">
+            <input type="date" [(ngModel)]="filters.dateFrom">
+            <input type="date" [(ngModel)]="filters.dateTo">
+          </div>
         </label>
       </div>
     </div>
@@ -86,39 +89,28 @@
           <span></span>
           <span></span>
         </div>
-        <div class="table-row">
-          <span>SO-2026-018</span>
-          <span>ABC Data Centers</span>
-          <span>BLR-DC-Phase1</span>
-          <span>₹12,500,000</span>
-          <span class="status-pill">PO_RECEIVED</span>
-          <span>Sales</span>
-          <span>2026-04-15</span>
-          <a class="link-button" routerLink="/sales-order/SO-2026-018">Open</a>
-          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88991">Upload PO</a>
+        <div class="table-row" *ngFor="let order of filteredOrders">
+          <span>{{ order.id }}</span>
+          <span>{{ order.customer }}</span>
+          <span>{{ order.project }}</span>
+          <span>₹{{ order.value | number }}</span>
+          <span class="status-pill">{{ order.status }}</span>
+          <span>{{ order.owner }}</span>
+          <span>{{ order.delivery }}</span>
+          <span class="link-button disabled" *ngIf="isOpenDisabled(order.status)">Open</span>
+          <a class="link-button" *ngIf="!isOpenDisabled(order.status)" [routerLink]="['/sales-order', order.id]">
+            Open
+          </a>
+          <a
+            class="btn btn-secondary"
+            [routerLink]="['/Sales Order & PO Management/po-intake', order.quotationId]"
+          >
+            Upload PO
+          </a>
         </div>
-        <div class="table-row">
-          <span>SO-2026-021</span>
-          <span>Nimbus Logistics</span>
-          <span>HYD-DC-Expansion</span>
-          <span>₹4,200,000</span>
-          <span class="status-pill">ENGINEERING_FROZEN</span>
-          <span>Engineering</span>
-          <span>2026-05-02</span>
-          <a class="link-button" routerLink="/sales-order/SO-2026-021">Open</a>
-          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88977">Upload PO</a>
-        </div>
-        <div class="table-row">
-          <span>SO-2026-027</span>
-          <span>Helios Energy</span>
-          <span>DEL-Edge-Cluster</span>
-          <span>₹9,750,000</span>
-          <span class="status-pill">READY_FOR_MRP</span>
-          <span>SCM</span>
-          <span>2026-03-28</span>
-          <a class="link-button" routerLink="/sales-order/SO-2026-027">Open</a>
-          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88912">Upload PO</a>
-        </div>
+        <p class="empty-state" *ngIf="filteredOrders.length === 0">
+          No sales orders match the current filters.
+        </p>
       </div>
     </div>
 

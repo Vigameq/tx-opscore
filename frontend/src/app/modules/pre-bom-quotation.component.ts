@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { jsPDF } from 'jspdf';
 import { PreBomRecord, PreBomStoreService } from '../services/pre-bom-store.service';
+import { SalesOrderStoreService } from '../services/sales-order-store.service';
 
 interface PreBomHeader {
   pre_bom_id: string;
@@ -29,9 +30,11 @@ interface PreBomHeader {
 })
 export class PreBomQuotationComponent implements AfterViewInit {
   private preBomStore: PreBomStoreService;
+  private salesOrderStore: SalesOrderStoreService;
 
-  constructor(preBomStore: PreBomStoreService) {
+  constructor(preBomStore: PreBomStoreService, salesOrderStore: SalesOrderStoreService) {
     this.preBomStore = preBomStore;
+    this.salesOrderStore = salesOrderStore;
   }
   summary = [
     { label: 'Draft BOMs', value: '6' },
@@ -48,6 +51,7 @@ export class PreBomQuotationComponent implements AfterViewInit {
       id: 'QT-88991',
       customer: 'ABC Data Centers Pvt Ltd',
       status: 'SENT',
+      opportunityId: 'OPP-56789',
       amount: '₹12,500,000',
       amountValue: 12500000,
       updatedAt: '2026-01-26'
@@ -56,6 +60,7 @@ export class PreBomQuotationComponent implements AfterViewInit {
       id: 'QT-88977',
       customer: 'Nimbus Logistics',
       status: 'DRAFT',
+      opportunityId: 'OPP-88977',
       amount: '₹4,200,000',
       amountValue: 4200000,
       updatedAt: '2026-01-22'
@@ -64,6 +69,7 @@ export class PreBomQuotationComponent implements AfterViewInit {
       id: 'QT-88912',
       customer: 'Helios Energy',
       status: 'APPROVED',
+      opportunityId: 'OPP-88912',
       amount: '₹9,750,000',
       amountValue: 9750000,
       updatedAt: '2026-01-18'
@@ -129,23 +135,43 @@ export class PreBomQuotationComponent implements AfterViewInit {
     contactEmail: '',
     gstin: '',
     opportunityId: '',
+    siteLocation: '',
     validUntil: '2026-02-08',
+    opportunityLocked: false,
   };
   quoteLineItems = [
     { item: '', uom: 'Nos', qty: 1, price: 0 }
   ];
+  itemOptions = ['Rack enclosure', 'PDU', 'Busbar', 'Containment', 'Service'];
 
   onOpportunityChange(): void {
+    if (this.quoteForm.opportunityLocked) {
+      return;
+    }
     const selected = this.preBomRecords.find((record) => record.opportunityId === this.quoteForm.opportunityId);
     if (!selected) {
       return;
     }
-    const customerName = selected.snapshot?.customer_name || selected.project;
+    const snapshot = selected.snapshot;
+    const customerName = snapshot.customer_name || selected.project;
     this.quoteForm.customer = customerName;
     this.quoteForm.customerName = customerName;
-    this.quoteLineItems = [
-      { item: 'Pre-BOM package', uom: 'Nos', qty: 1, price: 0 },
-    ];
+    this.quoteForm.siteLocation = snapshot.site_location || '';
+
+    this.quoteLineItems = selected.finishedGoods?.length
+      ? selected.finishedGoods.map((line) => ({
+          item: `${line.product_family}${line.product_model ? ` · ${line.product_model}` : ''}`,
+          uom: line.uom || 'Nos',
+          qty: line.quantity || 1,
+          price: line.target_unit_price ?? 0
+        }))
+      : this.buildLineItemsFromSnapshot(snapshot);
+
+    this.quoteLineItems.forEach((line) => {
+      if (line.item && !this.itemOptions.includes(line.item)) {
+        this.itemOptions = [...this.itemOptions, line.item];
+      }
+    });
   }
 
   openQuoteModal(): void {
@@ -154,6 +180,92 @@ export class PreBomQuotationComponent implements AfterViewInit {
 
   closeQuoteModal(): void {
     this.showQuoteModal = false;
+  }
+
+  saveQuoteDraft(): void {
+    const customerName = this.quoteForm.customerName || this.quoteForm.customer || 'Unknown customer';
+    const amountValue = this.quoteTotal;
+    const updatedAt = new Date().toISOString().slice(0, 10);
+    const opportunityId = this.quoteForm.opportunityId || '';
+    const existingIndex = this.quotationRecords.findIndex(
+      (record) => record.status === 'DRAFT' && record.opportunityId === opportunityId
+    );
+
+    const draftRecord = {
+      id:
+        existingIndex >= 0
+          ? this.quotationRecords[existingIndex].id
+          : `QT-${new Date().getFullYear()}-${String(this.quotationRecords.length + 1).padStart(4, '0')}`,
+      customer: customerName,
+      status: 'DRAFT',
+      opportunityId,
+      amount: `₹${amountValue.toLocaleString('en-IN')}`,
+      amountValue,
+      updatedAt,
+    };
+
+    if (existingIndex >= 0) {
+      this.quotationRecords = this.quotationRecords.map((record, index) =>
+        index === existingIndex ? draftRecord : record
+      );
+    } else {
+      this.quotationRecords = [draftRecord, ...this.quotationRecords];
+    }
+
+    this.quoteForm.opportunityLocked = true;
+    this.closeQuoteModal();
+  }
+
+  previewAndSend(): void {
+    const recipient = this.quoteForm.email?.trim();
+    if (!recipient) {
+      window.alert('Please enter a customer email before sending the quotation.');
+      return;
+    }
+    const confirmed = window.confirm(`Send quotation to ${recipient}?`);
+    if (!confirmed) {
+      return;
+    }
+    const customerName = this.quoteForm.customerName || this.quoteForm.customer || 'Unknown customer';
+    const amountValue = this.quoteTotal;
+    const updatedAt = new Date().toISOString().slice(0, 10);
+    const opportunityId = this.quoteForm.opportunityId || '';
+    const existingIndex = this.quotationRecords.findIndex(
+      (record) => record.opportunityId === opportunityId
+    );
+    const sentRecord = {
+      id:
+        existingIndex >= 0
+          ? this.quotationRecords[existingIndex].id
+          : `QT-${new Date().getFullYear()}-${String(this.quotationRecords.length + 1).padStart(4, '0')}`,
+      customer: customerName,
+      status: 'SENT',
+      opportunityId,
+      amount: `₹${amountValue.toLocaleString('en-IN')}`,
+      amountValue,
+      updatedAt,
+    };
+
+    if (existingIndex >= 0) {
+      this.quotationRecords = this.quotationRecords.map((record, index) =>
+        index === existingIndex ? sentRecord : record
+      );
+    } else {
+      this.quotationRecords = [sentRecord, ...this.quotationRecords];
+    }
+
+    const preBomMatch = this.preBomRecords.find((record) => record.opportunityId === opportunityId);
+    this.salesOrderStore.upsertFromQuotation({
+      quotationId: sentRecord.id,
+      opportunityId,
+      customer: customerName,
+      project: preBomMatch?.project || 'Untitled project',
+      value: amountValue,
+      delivery: preBomMatch?.snapshot?.target_delivery_date
+    });
+
+    window.alert(`Quotation emailed to ${recipient} (mock).`);
+    this.closeQuoteModal();
   }
 
 
@@ -174,6 +286,35 @@ export class PreBomQuotationComponent implements AfterViewInit {
 
   get quoteTotal(): number {
     return this.quoteLineItems.reduce((sum, line) => sum + line.qty * line.price, 0);
+  }
+
+  private buildLineItemsFromSnapshot(snapshot: PreBomRecord['snapshot']) {
+    const families = (snapshot.product_families_required || '')
+      .split(/[,/]/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    const items = families.length
+      ? families.map((family) => {
+          const normalized = family.toLowerCase();
+          const isRack = normalized.includes('rack');
+          const qty = isRack && snapshot.rack_count ? snapshot.rack_count : 1;
+          return {
+            item: family,
+            uom: 'Nos',
+            qty,
+            price: 0
+          };
+        })
+      : [{ item: 'Pre-BOM package', uom: 'Nos', qty: 1, price: 0 }];
+
+    items.forEach((item) => {
+      if (item.item && !this.itemOptions.includes(item.item)) {
+        this.itemOptions = [...this.itemOptions, item.item];
+      }
+    });
+
+    return items;
   }
 
   ngAfterViewInit(): void {

@@ -108,6 +108,12 @@
   color: #f5f2ea;
 }
 
+.date-range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .table-grid {
   display: grid;
   gap: 10px;
@@ -155,6 +161,12 @@
   font-weight: 600;
 }
 
+.link-button.disabled {
+  color: #7b8f8b;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 .btn.btn-secondary {
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(10, 18, 20, 0.7);
@@ -163,6 +175,12 @@
   border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
+}
+
+.empty-state {
+  margin: 8px 0 0;
+  color: #9cb8b3;
+  font-size: 0.9rem;
 }
 
 .guard-grid {

@@ -459,6 +459,12 @@ export class PreBomFormComponent implements OnInit {
   }
 
   saveDraft(): void {
+    if (this.selectedOpportunityId) {
+      this.preBomStore.updateRecordDetails(this.selectedOpportunityId, {
+        snapshot: this.requirementSnapshot,
+        finishedGoods: this.finishedGoods
+      });
+    }
     window.alert('Draft saved (mock).');
   }
 
@@ -471,6 +477,10 @@ export class PreBomFormComponent implements OnInit {
     window.alert('Pre-BOM approved for quotation.');
     if (this.selectedOpportunityId) {
       this.preBomStore.updateStatusByOpportunity(this.selectedOpportunityId, 'APPROVED_FOR_QUOTE');
+      this.preBomStore.updateRecordDetails(this.selectedOpportunityId, {
+        snapshot: this.requirementSnapshot,
+        finishedGoods: this.finishedGoods
+      });
     }
     this.workflowStatus = {
       current_status: 'APPROVED_FOR_QUOTE',
