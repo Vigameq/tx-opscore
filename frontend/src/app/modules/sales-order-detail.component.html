@@ -1,0 +1,122 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/sales-order-po">← Back to Sales Orders</a>
+      <p class="eyebrow">Sales order</p>
+      <h1>{{ header.title }}</h1>
+      <p class="lead">{{ header.subtitle }}</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Order Summary</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field"><span>Sales Order ID</span><input type="text" [value]="orderSummary.sales_order_id" disabled></label>
+        <label class="field"><span>Customer</span><input type="text" [value]="orderSummary.customer_name" disabled></label>
+        <label class="field"><span>Project</span><input type="text" [value]="orderSummary.project_name" disabled></label>
+        <label class="field"><span>Quotation ID</span><input type="text" [value]="orderSummary.quotation_id" disabled></label>
+        <label class="field"><span>PO Number</span><input type="text" [value]="orderSummary.po_number" disabled></label>
+        <label class="field"><span>Order Value</span><input type="text" [value]="orderSummary.order_value" disabled></label>
+        <label class="field"><span>Order Status</span><input type="text" [value]="orderSummary.current_status" disabled></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Order Lines</h2>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Product</span>
+          <span>Model</span>
+          <span>Description</span>
+          <span>Qty</span>
+          <span>UOM</span>
+          <span>Unit Price</span>
+          <span>Total</span>
+        </div>
+        <div class="table-row" *ngFor="let line of orderLines">
+          <span>{{ line.product_family }}</span>
+          <span>{{ line.product_model }}</span>
+          <span>{{ line.description }}</span>
+          <span>{{ line.quantity }}</span>
+          <span>{{ line.uom }}</span>
+          <span>{{ line.unit_price }}</span>
+          <span>{{ line.total_price }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Engineering Release</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field"><span>Scope Verified</span><input type="checkbox" [(ngModel)]="engineeringRelease.scope_verified"></label>
+        <label class="field"><span>Drawings Confirmed</span><input type="checkbox" [(ngModel)]="engineeringRelease.drawings_confirmed"></label>
+        <label class="field"><span>Pre-BOM Ready for Conversion</span><input type="checkbox" [(ngModel)]="engineeringRelease.bom_ready"></label>
+        <label class="field"><span>Engineering Notes</span><textarea rows="2" [(ngModel)]="engineeringRelease.engineering_notes"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" [disabled]="!canRequestFreeze()">Request Engineering Freeze</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Final BOM</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field"><span>Final BOM ID</span><input type="text" [value]="finalBom.final_bom_id" disabled></label>
+        <label class="field"><span>BOM Status</span><input type="text" [value]="finalBom.bom_status" disabled></label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" [disabled]="!canFreezeEngineering()">Freeze Engineering</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Planning &amp; Release</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field"><span>Ready for MRP</span><input type="checkbox" [(ngModel)]="planning.mrp_ready"></label>
+        <label class="field"><span>Planning Notes</span><textarea rows="2" [(ngModel)]="planning.planning_notes"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="button" [disabled]="!canReleaseMrp()">Release to MRP</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Workflow &amp; Audit</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field"><span>Current Owner</span><input type="text" [value]="workflow.current_owner" disabled></label>
+        <label class="field"><span>Pending With</span><input type="text" [value]="workflow.pending_with" disabled></label>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Date</span>
+          <span>Action</span>
+          <span>From</span>
+          <span>To</span>
+          <span>Performed By</span>
+          <span>Remarks</span>
+        </div>
+        <div class="table-row" *ngFor="let log of workflowLog">
+          <span>{{ log.date }}</span>
+          <span>{{ log.action }}</span>
+          <span>{{ log.from_status }}</span>
+          <span>{{ log.to_status }}</span>
+          <span>{{ log.performed_by }}</span>
+          <span>{{ log.remarks }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

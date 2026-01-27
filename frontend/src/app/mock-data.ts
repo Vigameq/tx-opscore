@@ -82,6 +82,13 @@ export const MODULES: ModuleCard[] = [
   },
   {
     icon: 'SO',
+    name: 'Sales Order & PO Management',
+    description: 'Track sales orders, POs, invoicing, and fulfillment status.',
+    tags: ['Planned', 'Finance'],
+    route: '/modules/sales-order-po'
+  },
+  {
+    icon: 'SS',
     name: 'Solution Studio',
     description: 'Design solutions with costing, feasibility, and risk overlays.',
     tags: ['Beta', 'Configurable']

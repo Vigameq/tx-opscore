@@ -298,6 +298,23 @@
   font-family: inherit;
 }
 
+.field textarea {
+  background: var(--bg-alt);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
 .project-meta {
   display: flex;
   gap: 24px;

@@ -3,6 +3,7 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { jsPDF } from 'jspdf';
+import { PreBomStoreService, RequirementSnapshot } from '../services/pre-bom-store.service';
 
 interface InfoItem {
   label: string;
@@ -16,6 +17,7 @@ interface RequirementSection {
 
 const DEFAULT_FORM_DATA = {
   projectName: '',
+  opportunityId: '',
   location: '',
   timeline: '',
   constraints: '',
@@ -140,6 +142,11 @@ interface RequirementEntry {
   styleUrl: './requirement-capture.component.scss'
 })
 export class RequirementCaptureComponent implements AfterViewInit {
+  private preBomStore: PreBomStoreService;
+
+  constructor(preBomStore: PreBomStoreService) {
+    this.preBomStore = preBomStore;
+  }
   summaryPills = [
     { label: 'Active sites', value: '4' },
     { label: 'Racks scoped', value: '126' },
@@ -294,6 +301,8 @@ export class RequirementCaptureComponent implements AfterViewInit {
   ];
 
   showModal = false;
+  formStatus: 'Draft' | 'In Review' | 'Captured' = 'Draft';
+  currentEntryId: string | null = null;
   formData: RequirementForm = { ...DEFAULT_FORM_DATA };
   attachmentFiles: File[] = [];
   showViewModal = false;
@@ -329,10 +338,16 @@ export class RequirementCaptureComponent implements AfterViewInit {
 
   openModal(): void {
     this.showModal = true;
+    this.formStatus = 'Draft';
+    this.currentEntryId = null;
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.formStatus = 'Draft';
+    this.currentEntryId = null;
+    this.formData = { ...DEFAULT_FORM_DATA };
+    this.attachmentFiles = [];
   }
 
   onAttachmentsSelected(event: Event): void {
@@ -361,33 +376,116 @@ export class RequirementCaptureComponent implements AfterViewInit {
     this.selectedRequirementSections = [];
   }
 
-  submitRequirement(): void {
+  saveRequirement(): void {
     if (!this.formData.projectName.trim()) {
       return;
     }
+    const confirmed = window.confirm('Save this requirement as In Review?');
+    if (!confirmed) {
+      return;
+    }
+    this.persistRequirement('In Review', { close: true });
+  }
 
+  captureRequirement(): void {
+    if (!this.formData.projectName.trim()) {
+      return;
+    }
+    const confirmed = window.confirm('Capture this requirement?');
+    if (!confirmed) {
+      return;
+    }
+    this.persistRequirement('Captured', { close: true });
+  }
+
+  private persistRequirement(status: 'Draft' | 'In Review' | 'Captured', options: { close: boolean }): void {
+    const entryId = this.currentEntryId ?? `req-${Date.now()}`;
     const entry: RequirementEntry = {
-      id: `req-${Date.now()}`,
+      id: entryId,
       projectName: this.formData.projectName.trim(),
       requirementType: this.formData.requirementType,
       location: this.formData.location.trim() || 'TBD',
       timeline: this.formData.timeline || 'TBD',
-      status: 'Captured',
+      status,
       updatedAt: new Date().toISOString().slice(0, 10),
       data: { ...this.formData },
     };
 
-    this.capturedProjects = [entry, ...this.capturedProjects];
-    this.formData = { ...DEFAULT_FORM_DATA };
-    this.attachmentFiles = [];
-    this.showModal = false;
+    if (this.currentEntryId) {
+      this.capturedProjects = this.capturedProjects.map((item) =>
+        item.id === this.currentEntryId ? entry : item
+      );
+    } else {
+      this.capturedProjects = [entry, ...this.capturedProjects];
+      this.currentEntryId = entry.id;
+    }
+
+    this.formStatus = status;
+    if (this.formStatus === 'Captured') {
+      this.preBomStore.addFromRequirement(this.toRequirementSnapshot(entry));
+    }
+    if (options.close) {
+      this.formData = { ...DEFAULT_FORM_DATA };
+      this.attachmentFiles = [];
+      this.showModal = false;
+      this.formStatus = 'Draft';
+      this.currentEntryId = null;
+    }
+  }
+
+  get isFormCaptured(): boolean {
+    return this.formStatus.toLowerCase() === 'captured';
+  }
+
+  private toRequirementSnapshot(entry: RequirementEntry): RequirementSnapshot {
+    const attachments = this.attachmentFiles.length
+      ? this.attachmentFiles.map((file) => file.name)
+      : entry.data.attachments
+      ? entry.data.attachments.split(',').map((item) => item.trim()).filter(Boolean)
+      : [];
+
+    return {
+      customer_name: entry.data.customer || 'Unknown',
+      opportunity_id: entry.data.opportunityId || 'TBD',
+      project_name: entry.projectName,
+      site_location: entry.location || 'TBD',
+      segment: 'Enterprise',
+      product_families_required: entry.requirementType,
+      rack_count: Number(entry.data.rackCount || 0),
+      it_load_per_rack: Number(entry.data.itLoad || 0),
+      redundancy: entry.data.redundancy || 'N/A',
+      compliance: [entry.data.compliance, entry.data.iec, entry.data.fireSafety]
+        .filter((item) => item && item.trim().length > 0)
+        .join(' · ') || 'None',
+      target_delivery_date: entry.timeline || '',
+      attachments,
+    };
   }
 
   openRequirement(entry: RequirementEntry): void {
     const hydrated = this.hydrateRequirement(entry);
-    this.selectedRequirement = hydrated;
-    this.selectedRequirementSections = this.buildSections(hydrated);
-    this.showViewModal = true;
+    this.formData = { ...hydrated.data };
+    this.formStatus = hydrated.status as 'Draft' | 'In Review' | 'Captured';
+    this.currentEntryId = hydrated.id;
+    this.showModal = true;
+    this.showViewModal = false;
+  }
+
+  updateRequirementStatus(entry: RequirementEntry, status: 'Draft' | 'In Review' | 'Captured'): void {
+    const label = status === 'In Review' ? 'save this requirement as In Review' : `mark this requirement as ${status}`;
+    const confirmed = window.confirm(`Are you sure you want to ${label}?`);
+    if (!confirmed) {
+      return;
+    }
+    this.capturedProjects = this.capturedProjects.map((item) =>
+      item.id === entry.id
+        ? { ...item, status, updatedAt: new Date().toISOString().slice(0, 10) }
+        : item
+    );
+    if (status === 'Captured') {
+      this.preBomStore.addFromRequirement(this.toRequirementSnapshot(entry));
+    }
+    this.closeModal();
   }
 
   // Ensure sections build with current helpers even for seeded data
@@ -588,6 +686,7 @@ export class RequirementCaptureComponent implements AfterViewInit {
     }
 
     const site: InfoItem[] = [];
+    addItem(site, 'Opportunity ID', data.opportunityId);
     addItem(site, 'Location', data.location);
     addItem(site, 'Timeline', data.timeline);
     addItem(site, 'Constraints', data.constraints);

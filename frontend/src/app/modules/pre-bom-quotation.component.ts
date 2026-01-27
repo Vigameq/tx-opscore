@@ -2,19 +2,22 @@ import { AfterViewInit, Component } from '@angular/core';
 import { DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { jsPDF } from 'jspdf';
+import { PreBomRecord, PreBomStoreService } from '../services/pre-bom-store.service';
 
-interface BomLine {
-  item: string;
-  qty: number;
-  unit: string;
-  unitCost: number;
-  notes: string;
-}
-
-interface BomSection {
-  title: string;
-  subtitle: string;
-  items: BomLine[];
+interface PreBomHeader {
+  pre_bom_id: string;
+  revision: string;
+  status: string;
+  currency: string;
+  target_selling_price: number;
+  expected_margin_pct: number;
+  quotation_validity: number;
+  expected_delivery_weeks: number;
+  delivery_location: string;
+  incoterms: string;
+  sales_notes: string;
+  special_conditions: string;
 }
 
 @Component({
@@ -25,88 +28,96 @@ interface BomSection {
   styleUrl: './pre-bom-quotation.component.scss'
 })
 export class PreBomQuotationComponent implements AfterViewInit {
+  private preBomStore: PreBomStoreService;
+
+  constructor(preBomStore: PreBomStoreService) {
+    this.preBomStore = preBomStore;
+  }
   summary = [
     { label: 'Draft BOMs', value: '6' },
     { label: 'Quotes sent', value: '3' },
     { label: 'Avg margin', value: '18%' },
   ];
 
-  bomSections: BomSection[] = [
+  get preBomRecords(): PreBomRecord[] {
+    return this.preBomStore.getPreBomRecords();
+  }
+
+  quotationRecords = [
     {
-      title: 'IT Racks & Accessories',
-      subtitle: 'Primary enclosures and add-ons for compute bays.',
-      items: [
-        { item: '42U rack enclosure', qty: 42, unit: 'ea', unitCost: 1200, notes: 'Mesh front, solid rear' },
-        { item: 'Cable management kit', qty: 42, unit: 'set', unitCost: 120, notes: 'Vertical + horizontal' },
-        { item: 'Blanking panels', qty: 210, unit: 'ea', unitCost: 8, notes: 'Mixed 1U/2U' },
-      ]
+      id: 'QT-88991',
+      customer: 'ABC Data Centers Pvt Ltd',
+      status: 'SENT',
+      amount: '₹12,500,000',
+      amountValue: 12500000,
+      updatedAt: '2026-01-26'
     },
     {
-      title: 'Power',
-      subtitle: 'Distribution, protection, and feed hardware.',
-      items: [
-        { item: 'Managed PDU (0U)', qty: 84, unit: 'ea', unitCost: 420, notes: 'C13/C19 mix' },
-        { item: 'Busbar tap-off box', qty: 16, unit: 'ea', unitCost: 640, notes: '32A, metered' },
-        { item: 'Main input breaker', qty: 2, unit: 'ea', unitCost: 1800, notes: '400A, 4P' },
-      ]
+      id: 'QT-88977',
+      customer: 'Nimbus Logistics',
+      status: 'DRAFT',
+      amount: '₹4,200,000',
+      amountValue: 4200000,
+      updatedAt: '2026-01-22'
     },
     {
-      title: 'Cooling',
-      subtitle: 'In-row or in-rack cooling systems.',
-      items: [
-        { item: 'LCP CW 40kW', qty: 7, unit: 'ea', unitCost: 14800, notes: 'Water-glycol' },
-        { item: 'Coolant distribution unit', qty: 2, unit: 'ea', unitCost: 7600, notes: 'Dual pump' },
-      ]
-    },
-    {
-      title: 'Containment',
-      subtitle: 'Aisle containment and air management.',
-      items: [
-        { item: 'Hot aisle doors', qty: 2, unit: 'set', unitCost: 2200, notes: 'Sliding, auto-close' },
-        { item: 'Roof panels', qty: 14, unit: 'ea', unitCost: 180, notes: 'Clear polycarbonate' },
-      ]
-    },
-    {
-      title: 'Monitoring & Controls',
-      subtitle: 'Telemetry, sensors, and alerts.',
-      items: [
-        { item: 'CMC monitoring gateway', qty: 2, unit: 'ea', unitCost: 1500, notes: 'SNMP + Modbus' },
-        { item: 'Temp/humidity sensors', qty: 24, unit: 'ea', unitCost: 95, notes: 'Rack-level' },
-      ]
-    },
-    {
-      title: 'Fire & Safety',
-      subtitle: 'Detection and suppression provisions.',
-      items: [
-        { item: 'VESDA detector', qty: 1, unit: 'ea', unitCost: 5200, notes: 'Aspirating system' },
-        { item: 'Clean agent suppression', qty: 1, unit: 'lot', unitCost: 18500, notes: 'Novec 1230' },
-      ]
-    },
-    {
-      title: 'Services',
-      subtitle: 'Installation, commissioning, and SLA.',
-      items: [
-        { item: 'Installation & commissioning', qty: 1, unit: 'lot', unitCost: 125000, notes: 'Includes testing' },
-        { item: 'AMC/SLA (12 months)', qty: 1, unit: 'lot', unitCost: 32000, notes: '24x7 coverage' },
-      ]
-    },
-    {
-      title: 'Logistics & Packaging',
-      subtitle: 'Crating, insurance, and delivery.',
-      items: [
-        { item: 'Export-grade wooden crates', qty: 12, unit: 'ea', unitCost: 220, notes: 'Shock indicators' },
-        { item: 'Insurance coverage', qty: 1, unit: 'lot', unitCost: 8000, notes: 'Door-to-door' },
-        { item: 'Last-mile delivery', qty: 1, unit: 'lot', unitCost: 12000, notes: 'Site handling' },
-      ]
+      id: 'QT-88912',
+      customer: 'Helios Energy',
+      status: 'APPROVED',
+      amount: '₹9,750,000',
+      amountValue: 9750000,
+      updatedAt: '2026-01-18'
     },
   ];
 
+  exportQuotation(recordId: string): void {
+    const record = this.quotationRecords.find((item) => item.id === recordId);
+    if (!record) {
+      window.alert('Quotation not found.');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const now = new Date();
+    const dateString = now.toISOString().slice(0, 10);
+
+    doc.setFontSize(16);
+    doc.text('Quotation Summary', 14, 18);
+
+    doc.setFontSize(11);
+    doc.text(`Quotation ID: ${record.id}`, 14, 30);
+    doc.text(`Customer: ${record.customer}`, 14, 38);
+    doc.text(`Status: ${record.status}`, 14, 46);
+    doc.text(`Amount: ${record.amount}`, 14, 54);
+    doc.text(`Last Updated: ${record.updatedAt}`, 14, 62);
+    doc.text(`Exported: ${dateString}`, 14, 70);
+
+    doc.save(`${record.id}-quotation.pdf`);
+  }
+
+  preBomHeader: PreBomHeader = {
+    pre_bom_id: 'PBOM-2026-0001',
+    revision: 'V1',
+    status: 'DRAFT',
+    currency: 'INR',
+    target_selling_price: 12500000,
+    expected_margin_pct: 18,
+    quotation_validity: 60,
+    expected_delivery_weeks: 10,
+    delivery_location: 'Bengaluru, IN',
+    incoterms: 'FOB',
+    sales_notes: 'Priority account. Align delivery with site readiness.',
+    special_conditions: 'Split shipment allowed.'
+  };
+
   get totalCost(): number {
-    return this.bomSections.reduce(
-      (sectionSum, section) =>
-        sectionSum + section.items.reduce((sum, line) => sum + line.qty * line.unitCost, 0),
-      0
-    );
+    return this.preBomHeader.target_selling_price || 0;
+  }
+
+  get approvedQuotationTotal(): number {
+    return this.quotationRecords
+      .filter((quote) => quote.status === 'APPROVED')
+      .reduce((sum, quote) => sum + quote.amountValue, 0);
   }
 
   showQuoteModal = false;
@@ -117,11 +128,25 @@ export class PreBomQuotationComponent implements AfterViewInit {
     customerName: '',
     contactEmail: '',
     gstin: '',
+    opportunityId: '',
     validUntil: '2026-02-08',
   };
   quoteLineItems = [
     { item: '', uom: 'Nos', qty: 1, price: 0 }
   ];
+
+  onOpportunityChange(): void {
+    const selected = this.preBomRecords.find((record) => record.opportunityId === this.quoteForm.opportunityId);
+    if (!selected) {
+      return;
+    }
+    const customerName = selected.snapshot?.customer_name || selected.project;
+    this.quoteForm.customer = customerName;
+    this.quoteForm.customerName = customerName;
+    this.quoteLineItems = [
+      { item: 'Pre-BOM package', uom: 'Nos', qty: 1, price: 0 },
+    ];
+  }
 
   openQuoteModal(): void {
     this.showQuoteModal = true;
@@ -130,6 +155,7 @@ export class PreBomQuotationComponent implements AfterViewInit {
   closeQuoteModal(): void {
     this.showQuoteModal = false;
   }
+
 
   addLineItem(): void {
     this.quoteLineItems = [...this.quoteLineItems, { item: '', uom: 'Nos', qty: 1, price: 0 }];

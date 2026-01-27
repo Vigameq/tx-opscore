@@ -1,0 +1,150 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Sales order module</p>
+      <h1>Sales Order &amp; PO Management</h1>
+      <p class="lead">
+        Order execution control center from quotation acceptance through MRP release.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill">PO Received: 4</span>
+        <span class="hero-pill">SO Created: 3</span>
+        <span class="hero-pill">Ready for MRP: 2</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Workflow stages</h2>
+        <p class="panel-subtitle">Current lifecycle for Sales Orders.</p>
+      </div>
+      <div class="workflow-track">
+        <span>Quotation Accepted</span>
+        <span>PO Received</span>
+        <span>PO Verified</span>
+        <span>Sales Order Created</span>
+        <span>Engineering Release Pending</span>
+        <span>Engineering Frozen</span>
+        <span>Ready for MRP</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Filters</h2>
+        <p class="panel-subtitle">Narrow down sales orders and PO intake.</p>
+      </div>
+      <div class="filter-grid">
+        <label class="field">
+          <span>Customer</span>
+          <select>
+            <option value="">All customers</option>
+            <option>ABC Data Centers</option>
+            <option>Nimbus Logistics</option>
+            <option>Helios Energy</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <select>
+            <option value="">All statuses</option>
+            <option>PO_RECEIVED</option>
+            <option>PO_VERIFIED</option>
+            <option>SALES_ORDER_CREATED</option>
+            <option>ENGINEERING_FROZEN</option>
+            <option>READY_FOR_MRP</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Project</span>
+          <input type="text" placeholder="Search project">
+        </label>
+        <label class="field">
+          <span>Date range</span>
+          <input type="date">
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Sales order list</h2>
+        <p class="panel-subtitle">Dashboard view of active sales orders.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>SO ID</span>
+          <span>Customer</span>
+          <span>Project</span>
+          <span>Value</span>
+          <span>Status</span>
+          <span>Owner</span>
+          <span>Delivery</span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="table-row">
+          <span>SO-2026-018</span>
+          <span>ABC Data Centers</span>
+          <span>BLR-DC-Phase1</span>
+          <span>₹12,500,000</span>
+          <span class="status-pill">PO_RECEIVED</span>
+          <span>Sales</span>
+          <span>2026-04-15</span>
+          <a class="link-button" routerLink="/sales-order/SO-2026-018">Open</a>
+          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88991">Upload PO</a>
+        </div>
+        <div class="table-row">
+          <span>SO-2026-021</span>
+          <span>Nimbus Logistics</span>
+          <span>HYD-DC-Expansion</span>
+          <span>₹4,200,000</span>
+          <span class="status-pill">ENGINEERING_FROZEN</span>
+          <span>Engineering</span>
+          <span>2026-05-02</span>
+          <a class="link-button" routerLink="/sales-order/SO-2026-021">Open</a>
+          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88977">Upload PO</a>
+        </div>
+        <div class="table-row">
+          <span>SO-2026-027</span>
+          <span>Helios Energy</span>
+          <span>DEL-Edge-Cluster</span>
+          <span>₹9,750,000</span>
+          <span class="status-pill">READY_FOR_MRP</span>
+          <span>SCM</span>
+          <span>2026-03-28</span>
+          <a class="link-button" routerLink="/sales-order/SO-2026-027">Open</a>
+          <a class="btn btn-secondary" routerLink="/Sales Order & PO Management/po-intake/QT-88912">Upload PO</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Action guardrails</h2>
+        <p class="panel-subtitle">Role and state checks for workflow actions.</p>
+      </div>
+      <div class="guard-grid">
+        <div class="guard-card">
+          <h3>Submit for PO verification</h3>
+          <p>Role: SALES · State: PO_RECEIVED</p>
+        </div>
+        <div class="guard-card">
+          <h3>Request engineering freeze</h3>
+          <p>Role: ENGINEERING · State: SALES_ORDER_CREATED</p>
+        </div>
+        <div class="guard-card">
+          <h3>Freeze engineering</h3>
+          <p>Role: ENGINEERING_LEAD · State: ENGINEERING_RELEASE_PENDING</p>
+        </div>
+        <div class="guard-card">
+          <h3>Release to MRP</h3>
+          <p>Role: SCM / PLANNING · State: ENGINEERING_FROZEN</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

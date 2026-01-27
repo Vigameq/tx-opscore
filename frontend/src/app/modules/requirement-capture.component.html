@@ -56,6 +56,9 @@
             <p class="captured-meta">
               {{ project.location || 'TBD' }} · {{ project.timeline || 'TBD' }}
             </p>
+            <p class="captured-meta">
+              Opportunity: {{ project.data.opportunityId || 'TBD' }}
+            </p>
           </div>
           <div class="captured-footer">
             <span>Updated {{ project.updatedAt || 'unknown' }}</span>
@@ -90,45 +93,50 @@
 <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
   <div class="modal modal-wide" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>New requirement</h2>
+      <h2>Requirement details</h2>
       <button class="modal-close" type="button" (click)="closeModal()">✕</button>
     </div>
     <p class="panel-subtitle">
       Capture site, rack, power, and compliance details for a project.
     </p>
-    <form class="requirement-form" (ngSubmit)="submitRequirement()">
-      <div class="form-grid">
-        <label class="field">
-          <span>Project name</span>
-          <input type="text" [(ngModel)]="formData.projectName" name="projectName" required>
-        </label>
-        <label class="field">
-          <span>New requirement</span>
-          <select [(ngModel)]="formData.requirementType" name="requirementType">
-            <option>Racks Enclosure</option>
-            <option>Micro Data Center</option>
-            <option>GCC</option>
-            <option>PDU's</option>
-            <option>Container DC</option>
-            <option>TierAI Tool</option>
-            <option>Others</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>Location</span>
-          <input type="text" [(ngModel)]="formData.location" name="location">
-        </label>
-        <label class="field">
-          <span>Timelines</span>
-          <input type="date" [(ngModel)]="formData.timeline" name="timeline">
-        </label>
-        <label class="field">
-          <span>Constraints</span>
-          <input type="text" [(ngModel)]="formData.constraints" name="constraints">
-        </label>
-      </div>
+    <form class="requirement-form" (ngSubmit)="captureRequirement()">
+      <div class="form-body" [class.locked]="isFormCaptured">
+        <div class="form-grid">
+          <label class="field">
+            <span>Project name</span>
+            <input type="text" [(ngModel)]="formData.projectName" name="projectName" required>
+          </label>
+          <label class="field">
+            <span>Opportunity ID</span>
+            <input type="text" [(ngModel)]="formData.opportunityId" name="opportunityId" placeholder="OPP-12345">
+          </label>
+          <label class="field">
+            <span>New requirement</span>
+            <select [(ngModel)]="formData.requirementType" name="requirementType">
+              <option>Racks Enclosure</option>
+              <option>Micro Data Center</option>
+              <option>GCC</option>
+              <option>PDU's</option>
+              <option>Container DC</option>
+              <option>TierAI Tool</option>
+              <option>Others</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Location</span>
+            <input type="text" [(ngModel)]="formData.location" name="location">
+          </label>
+          <label class="field">
+            <span>Timelines</span>
+            <input type="date" [(ngModel)]="formData.timeline" name="timeline">
+          </label>
+          <label class="field">
+            <span>Constraints</span>
+            <input type="text" [(ngModel)]="formData.constraints" name="constraints">
+          </label>
+        </div>
 
-      <div *ngIf="formData.requirementType !== 'GCC'">
+        <div *ngIf="formData.requirementType !== 'GCC'">
         <div *ngIf="showRackSection">
           <h3>Rack requirements</h3>
           <div class="form-grid">
@@ -455,10 +463,11 @@
         <h3>Mandatory attachments</h3>
         <label class="field"><span>Attachments</span><input type="text" [(ngModel)]="formData.mandatoryAttachments" name="mandatoryAttachments"></label>
       </div>
-
+      </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" type="button" (click)="closeModal()">Cancel</button>
-        <button class="btn btn-primary" type="submit">Save requirement</button>
+        <button class="btn btn-secondary" type="button" (click)="saveRequirement()" [disabled]="isFormCaptured">Save</button>
+        <button class="btn btn-primary" type="submit" [disabled]="isFormCaptured">Capture</button>
       </div>
     </form>
   </div>
@@ -485,7 +494,8 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" type="button" (click)="closeViewModal()">Close</button>
+      <button class="btn btn-secondary" type="button" (click)="selectedRequirement && updateRequirementStatus(selectedRequirement, 'In Review')" [disabled]="isFormCaptured">Save</button>
+      <button class="btn btn-primary" type="button" (click)="selectedRequirement && updateRequirementStatus(selectedRequirement, 'Captured')" [disabled]="isFormCaptured">Capture</button>
     </div>
   </div>
 </div>

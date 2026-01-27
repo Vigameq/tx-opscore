@@ -1,0 +1,135 @@
+:host {
+  display: block;
+}
+
+.module-page {
+  padding: 48px 24px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #f5f2ea;
+}
+
+.module-hero {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  color: #7fd4c6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: #7fb4ad;
+}
+
+.lead {
+  color: #cfe4df;
+  font-size: 1.05rem;
+  max-width: 600px;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.panel {
+  background: rgba(17, 28, 31, 0.9);
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-header {
+  display: grid;
+  gap: 6px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #cfe4df;
+}
+
+.field input,
+.field textarea {
+  background: rgba(10, 18, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f5f2ea;
+}
+
+.table-grid {
+  display: grid;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(140px, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.table-head {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  color: #9cb8b3;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.table-row {
+  background: rgba(10, 18, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btn.btn-primary {
+  background: #f4b942;
+  border: none;
+  color: #1b1b1b;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 980px) {
+  .table-head,
+  .table-row {
+    grid-auto-flow: row;
+    grid-auto-columns: 1fr;
+  }
+}

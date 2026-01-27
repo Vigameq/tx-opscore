@@ -1,0 +1,484 @@
+<div class="module-page">
+  <header class="module-hero" data-animate>
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/pre-bom-quotation">← Back to Pre-BOM & Quotation</a>
+      <p class="eyebrow">Pre-BOM workspace</p>
+      <h1>Pre-BOM Form</h1>
+      <p class="lead">
+        Cross-functional Pre-BOM form for Sales, Engineering, SCM, and Finance.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ preBomHeader.status }}</span>
+        <span class="hero-pill">Revision: {{ preBomHeader.revision }}</span>
+        <span class="hero-pill">Currency: {{ preBomHeader.currency }}</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h2>Status</h2>
+      <p class="panel-subtitle">Workflow state and ownership.</p>
+      <div class="total-card">
+        <p class="total-label">Current status</p>
+        <p class="total-value">{{ workflowStatus.current_status }}</p>
+        <p class="total-meta">Pending with: {{ workflowStatus.pending_with }}</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="pre-bom-modal" data-animate>
+    <div class="pre-bom-toolbar">
+      <div class="role-switch">
+        <span>Role</span>
+        <button type="button" class="pill" [class.active]="currentRole === 'SALES'" (click)="currentRole = 'SALES'">Sales</button>
+        <button type="button" class="pill" [class.active]="currentRole === 'ENGINEERING'" (click)="currentRole = 'ENGINEERING'">Engineering</button>
+        <button type="button" class="pill" [class.active]="currentRole === 'SCM'" (click)="currentRole = 'SCM'">SCM</button>
+        <button type="button" class="pill" [class.active]="currentRole === 'FINANCE'" (click)="currentRole = 'FINANCE'">Finance</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Requirement Snapshot</h3>
+        <p class="panel-subtitle">Auto-loaded from Requirement Capture. Read-only.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Customer Name</span>
+          <input type="text" [value]="requirementSnapshot.customer_name" disabled>
+        </label>
+        <label class="field">
+          <span>Opportunity ID</span>
+          <input type="text" [value]="requirementSnapshot.opportunity_id" disabled>
+        </label>
+        <label class="field">
+          <span>Project Name</span>
+          <input type="text" [value]="requirementSnapshot.project_name" disabled>
+        </label>
+        <label class="field">
+          <span>Site Location</span>
+          <input type="text" [value]="requirementSnapshot.site_location" disabled>
+        </label>
+        <label class="field">
+          <span>Segment</span>
+          <input type="text" [value]="requirementSnapshot.segment" disabled>
+        </label>
+        <label class="field">
+          <span>Product Families Required</span>
+          <input type="text" [value]="requirementSnapshot.product_families_required" disabled>
+        </label>
+        <label class="field">
+          <span>Number of Racks</span>
+          <input type="number" [value]="requirementSnapshot.rack_count" disabled>
+        </label>
+        <label class="field">
+          <span>IT Load per Rack (kW)</span>
+          <input type="number" [value]="requirementSnapshot.it_load_per_rack" disabled>
+        </label>
+        <label class="field">
+          <span>Redundancy</span>
+          <input type="text" [value]="requirementSnapshot.redundancy" disabled>
+        </label>
+        <label class="field">
+          <span>Compliance Required</span>
+          <textarea rows="2" [value]="requirementSnapshot.compliance" disabled></textarea>
+        </label>
+        <label class="field">
+          <span>Target Delivery Date</span>
+          <input type="date" [value]="requirementSnapshot.target_delivery_date" disabled>
+        </label>
+      </div>
+      <div class="attachment-list">
+        <p>Attachments</p>
+        <span *ngFor="let file of requirementSnapshot.attachments">{{ file }}</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Pre-BOM Header (Sales)</h3>
+        <p class="panel-subtitle">Commercial and project identity details.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Pre-BOM ID</span>
+          <input type="text" [value]="preBomHeader.pre_bom_id" disabled>
+        </label>
+        <label class="field">
+          <span>Revision</span>
+          <input type="text" [value]="preBomHeader.revision" disabled>
+        </label>
+        <label class="field">
+          <span>Status</span>
+          <input type="text" [value]="preBomHeader.status" disabled>
+        </label>
+        <label class="field">
+          <span>Currency</span>
+          <input type="text" [(ngModel)]="preBomHeader.currency" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Target Selling Price</span>
+          <input type="number" [(ngModel)]="preBomHeader.target_selling_price" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Expected Margin %</span>
+          <input type="number" [(ngModel)]="preBomHeader.expected_margin_pct" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Quotation Validity (days)</span>
+          <input type="number" [(ngModel)]="preBomHeader.quotation_validity" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Expected Delivery Weeks</span>
+          <input type="number" [(ngModel)]="preBomHeader.expected_delivery_weeks" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Delivery Location</span>
+          <input type="text" [(ngModel)]="preBomHeader.delivery_location" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Incoterms</span>
+          <input type="text" [(ngModel)]="preBomHeader.incoterms" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+        </label>
+        <label class="field">
+          <span>Sales Notes</span>
+          <textarea rows="2" [(ngModel)]="preBomHeader.sales_notes" [disabled]="isReadOnlyFor(currentRole, ['SALES'])"></textarea>
+        </label>
+        <label class="field">
+          <span>Special Commercial Conditions</span>
+          <textarea rows="2" [(ngModel)]="preBomHeader.special_conditions" [disabled]="isReadOnlyFor(currentRole, ['SALES'])"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title-row">
+          <h3>Finished Goods / Solution Lines (Sales)</h3>
+          <button class="btn btn-secondary" type="button" (click)="addFinishedGood()" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+            + Add row
+          </button>
+        </div>
+        <p class="panel-subtitle">Sales-owned definition of solution lines.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Line</span>
+          <span>Product Family</span>
+          <span>Product Model</span>
+          <span>Description</span>
+          <span>Qty</span>
+          <span>Unit</span>
+          <span>Configuration Summary</span>
+          <span>Target Unit Price</span>
+          <span>Target Lead Time</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let fg of finishedGoods; let i = index">
+          <span>{{ fg.line_no }}</span>
+          <input type="text" [(ngModel)]="fg.product_family" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="text" [(ngModel)]="fg.product_model" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="text" [(ngModel)]="fg.description" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="number" [(ngModel)]="fg.quantity" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="text" [(ngModel)]="fg.uom" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="text" [(ngModel)]="fg.config_summary" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="number" [(ngModel)]="fg.target_unit_price" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <input type="number" [(ngModel)]="fg.target_lead_time_weeks" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">
+          <button class="icon-button" type="button" (click)="removeFinishedGood(i)" [disabled]="isReadOnlyFor(currentRole, ['SALES'])">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title-row">
+          <h3>Engineering Configuration</h3>
+          <button class="btn btn-secondary" type="button" (click)="addEngineeringItem()" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+            + Add row
+          </button>
+        </div>
+        <p class="panel-subtitle">Technical configuration and sub-BOM tree.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Rack Height (U)</span>
+          <input type="text" [(ngModel)]="engineeringConfig.rack_height_u" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Width (mm)</span>
+          <input type="text" [(ngModel)]="engineeringConfig.rack_width_mm" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Depth (mm)</span>
+          <input type="text" [(ngModel)]="engineeringConfig.rack_depth_mm" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Load Rating (kg)</span>
+          <input type="text" [(ngModel)]="engineeringConfig.load_rating_kg" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Door Type</span>
+          <input type="text" [(ngModel)]="engineeringConfig.door_type" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Airflow Direction</span>
+          <input type="text" [(ngModel)]="engineeringConfig.airflow_direction" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Color / Finish</span>
+          <input type="text" [(ngModel)]="engineeringConfig.color_finish" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Compliance Tags</span>
+          <input type="text" [(ngModel)]="engineeringConfig.compliance_tags" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+      </div>
+      <h4 class="subsection-title">PDU Configuration</h4>
+      <div class="form-grid">
+        <label class="field">
+          <span>PDU Type</span>
+          <input type="text" [(ngModel)]="engineeringConfig.pdu_type" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Phase</span>
+          <input type="text" [(ngModel)]="engineeringConfig.pdu_phase" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Input Plug Type</span>
+          <input type="text" [(ngModel)]="engineeringConfig.pdu_input_plug" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Outlet Type &amp; Count</span>
+          <input type="text" [(ngModel)]="engineeringConfig.pdu_outlet" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Metering / Network</span>
+          <input type="text" [(ngModel)]="engineeringConfig.pdu_metering" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+      </div>
+      <h4 class="subsection-title">Busbar Configuration</h4>
+      <div class="form-grid">
+        <label class="field">
+          <span>Rating (A)</span>
+          <input type="text" [(ngModel)]="engineeringConfig.busbar_rating_a" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Length per aisle</span>
+          <input type="text" [(ngModel)]="engineeringConfig.busbar_length" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Redundancy</span>
+          <input type="text" [(ngModel)]="engineeringConfig.busbar_redundancy" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Tap-off Type</span>
+          <input type="text" [(ngModel)]="engineeringConfig.busbar_tapoff" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+        </label>
+      </div>
+
+      <h4 class="subsection-title">Sub-BOM / Component Tree</h4>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Line ID</span>
+          <span>Parent</span>
+          <span>Level</span>
+          <span>Category</span>
+          <span>Item Code</span>
+          <span>Item Name</span>
+          <span>Specification</span>
+          <span>Qty/FG</span>
+          <span>UOM</span>
+          <span>Make/Buy</span>
+          <span>Compliance</span>
+          <span>Drawing Ref</span>
+          <span>Critical</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let item of engineeringItems; let i = index">
+          <span>{{ item.line_id }}</span>
+          <span>{{ item.parent_line_id || '-' }}</span>
+          <span>{{ item.level }}</span>
+          <input type="text" [(ngModel)]="item.category" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.item_code" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.item_name" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.specification" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="number" [(ngModel)]="item.qty_per_fg" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.uom" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.make_buy_flag" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.compliance" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="text" [(ngModel)]="item.drawing_ref" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <input type="checkbox" [(ngModel)]="item.critical_item" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">
+          <button class="icon-button" type="button" (click)="removeEngineeringItem(i)" [disabled]="isReadOnlyFor(currentRole, ['ENGINEERING'])">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title-row">
+          <h3>SCM / Sourcing &amp; Lead Time</h3>
+          <button class="btn btn-secondary" type="button" (click)="addScmLine()" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+            + Add row
+          </button>
+        </div>
+        <p class="panel-subtitle">Sourcing decisions per BOM line.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Line</span>
+          <span>Source Type</span>
+          <span>Preferred Vendor</span>
+          <span>Alternate Vendor</span>
+          <span>MOQ</span>
+          <span>Lead Time (Days)</span>
+          <span>Import</span>
+          <span>Single Source</span>
+          <span>Availability</span>
+          <span>Remarks</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let row of scmLines; let i = index">
+          <span>{{ row.item_line_id }}</span>
+          <input type="text" [(ngModel)]="row.source_type" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="text" [(ngModel)]="row.preferred_vendor" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="text" [(ngModel)]="row.alternate_vendor" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="number" [(ngModel)]="row.moq" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="number" [(ngModel)]="row.lead_time_days" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="checkbox" [(ngModel)]="row.import_flag" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="checkbox" [(ngModel)]="row.single_source_risk" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="text" [(ngModel)]="row.availability_status" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <input type="text" [(ngModel)]="row.remarks" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">
+          <button class="icon-button" type="button" (click)="removeScmLine(i)" [disabled]="isReadOnlyFor(currentRole, ['SCM'])">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title-row">
+          <h3>Costing &amp; Margin</h3>
+          <button class="btn btn-secondary" type="button" (click)="addCostLine()" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+            + Add row
+          </button>
+        </div>
+        <p class="panel-subtitle">Finance-owned cost roll-up.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Line</span>
+          <span>Unit Cost</span>
+          <span>Tooling</span>
+          <span>Bought-out</span>
+          <span>Labor</span>
+          <span>Overhead</span>
+          <span>Total Cost</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let row of costLines; let i = index">
+          <span>{{ row.item_line_id }}</span>
+          <input type="number" [(ngModel)]="row.estimated_unit_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <input type="number" [(ngModel)]="row.tooling_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <input type="number" [(ngModel)]="row.bought_out_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <input type="number" [(ngModel)]="row.labor_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <input type="number" [(ngModel)]="row.overhead_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <input type="number" [(ngModel)]="row.estimated_total_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+          <button class="icon-button" type="button" (click)="removeCostLine(i)" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">✕</button>
+        </div>
+      </div>
+      <div class="form-grid summary-grid">
+        <label class="field">
+          <span>Total Estimated Cost</span>
+          <input type="number" [(ngModel)]="costSummary.total_estimated_cost" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+        </label>
+        <label class="field">
+          <span>Final Approved Price</span>
+          <input type="number" [(ngModel)]="costSummary.final_price" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+        </label>
+        <label class="field">
+          <span>Gross Margin %</span>
+          <input type="number" [(ngModel)]="costSummary.gross_margin_pct" [disabled]="isReadOnlyFor(currentRole, ['FINANCE'])">
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Services &amp; Delivery</h3>
+        <p class="panel-subtitle">Shared by Sales + Engineering.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Installation Required</span>
+          <input type="text" [(ngModel)]="servicesDelivery.installation_required" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Commissioning Required</span>
+          <input type="text" [(ngModel)]="servicesDelivery.commissioning_required" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Site Supervision Days</span>
+          <input type="text" [(ngModel)]="servicesDelivery.site_supervision_days" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Training Required</span>
+          <input type="text" [(ngModel)]="servicesDelivery.training_required" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>Warranty Period</span>
+          <input type="text" [(ngModel)]="servicesDelivery.warranty_period" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+        <label class="field">
+          <span>AMC Option</span>
+          <input type="text" [(ngModel)]="servicesDelivery.amc_option" [disabled]="isReadOnlyFor(currentRole, ['SALES', 'ENGINEERING'])">
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Workflow &amp; Approvals</h3>
+        <p class="panel-subtitle">System-owned status and audit log.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Current Status</span>
+          <input type="text" [value]="workflowStatus.current_status" disabled>
+        </label>
+        <label class="field">
+          <span>Pending With Role</span>
+          <input type="text" [value]="workflowStatus.pending_with" disabled>
+        </label>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Date</span>
+          <span>Action</span>
+          <span>From</span>
+          <span>To</span>
+          <span>Remarks</span>
+        </div>
+        <div class="table-row" *ngFor="let log of approvalLog">
+          <span>{{ log.date }}</span>
+          <span>{{ log.action }}</span>
+          <span>{{ log.from }}</span>
+          <span>{{ log.to }}</span>
+          <span>{{ log.remarks }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Attachments &amp; References</h3>
+        <p class="panel-subtitle">Requirement documents and costing sheets.</p>
+      </div>
+      <div class="attachment-list">
+        <span *ngFor="let file of attachments">{{ file }}</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" type="button" (click)="cancelEdit()">Cancel</button>
+      <button class="btn green" type="button" (click)="saveDraft()">Save</button>
+      <button class="btn btn-primary" type="button" (click)="submitForNext()">Submit</button>
+    </div>
+  </section>
+</div>

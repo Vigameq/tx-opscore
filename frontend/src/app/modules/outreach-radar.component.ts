@@ -82,6 +82,7 @@ export class OutreachRadarComponent implements AfterViewInit {
     name: '',
     customer: '',
     owner: '',
+    note: '',
     status: 'Discovery',
   };
 
@@ -205,6 +206,12 @@ export class OutreachRadarComponent implements AfterViewInit {
       return;
     }
 
+    const noteWords = this.countWords(this.newProject.note);
+    if (noteWords > 100) {
+      window.alert('Notes are limited to 100 words.');
+      return;
+    }
+
     const id = `proj-${Date.now()}`;
     const project: ProjectSummary = {
       id,
@@ -220,6 +227,7 @@ export class OutreachRadarComponent implements AfterViewInit {
       name: '',
       customer: '',
       owner: '',
+      note: '',
       status: 'Discovery',
     };
     this.showProjectModal = false;
@@ -227,6 +235,12 @@ export class OutreachRadarComponent implements AfterViewInit {
 
   openProjectModal(): void {
     this.showProjectModal = true;
+  }
+
+  countWords(text: string): number {
+    return text.trim().length === 0
+      ? 0
+      : text.trim().split(/\s+/).filter((word) => word.length > 0).length;
   }
 
   openOpportunityModal(): void {

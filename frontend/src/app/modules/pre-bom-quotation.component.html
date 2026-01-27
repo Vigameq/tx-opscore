@@ -14,51 +14,75 @@
         </span>
       </div>
       <div class="hero-cta">
-        <button class="btn btn-primary" type="button">Pre-BOM</button>
+        <a class="btn btn-primary" [routerLink]="['/modules/pre-bom-form']" [queryParams]="{ mode: 'new' }">Pre-BOM</a>
         <button class="btn btn-secondary" type="button" (click)="openQuoteModal()">Quotation</button>
       </div>
     </div>
     <div class="hero-card">
-      <h2>Draft totals</h2>
+      <h2>Quotation summary</h2>
       <p class="panel-subtitle">
-        Current draft rollup for the active configuration.
+        Approved quotation total for this workspace.
       </p>
       <div class="total-card">
-        <p class="total-label">Estimated material + services</p>
-        <p class="total-value">₹{{ totalCost | number }}</p>
-        <p class="total-meta">Excludes tax and logistics</p>
+        <p class="total-label">Approved total</p>
+        <p class="total-value">₹{{ approvedQuotationTotal | number }}</p>
+        <p class="total-meta">Currency: {{ preBomHeader.currency }}</p>
       </div>
     </div>
   </header>
 
-  <section class="section-grid bom-sections" data-animate>
-    <div class="panel" *ngFor="let section of bomSections">
-      <div class="panel-header">
-        <h2>{{ section.title }}</h2>
-        <p class="panel-subtitle">{{ section.subtitle }}</p>
-      </div>
-      <div class="bom-card-table">
-        <div class="bom-card-row bom-card-head">
-          <span>Item</span>
-          <span>Qty</span>
-          <span>Unit</span>
-          <span>Unit cost</span>
-          <span>Notes</span>
+  <div class="panel pre-bom-empty" data-animate>
+    <div class="panel-header">
+      <h2>Pre-BOM record</h2>
+      <p class="panel-subtitle">
+        Saved and submitted Pre-BOMs linked to this workspace.
+      </p>
+    </div>
+    <div class="pre-bom-records">
+      <div class="pre-bom-record" *ngFor="let record of preBomRecords">
+        <div>
+          <h3>{{ record.id }}</h3>
+          <p>{{ record.project }}</p>
         </div>
-        <div class="bom-card-row" *ngFor="let line of section.items">
-          <span>{{ line.item }}</span>
-          <span>{{ line.qty }}</span>
-          <span>{{ line.unit }}</span>
-          <span>₹{{ line.unitCost | number }}</span>
-          <span>{{ line.notes }}</span>
+        <div class="record-meta">
+          <span class="status">{{ record.status }}</span>
+          <span>{{ record.owner }}</span>
+          <span>{{ record.updatedAt }}</span>
+        </div>
+        <a class="btn btn-secondary" routerLink="/modules/pre-bom-form">Open</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel pre-bom-empty" data-animate>
+    <div class="panel-header">
+      <h2>Quotations</h2>
+      <p class="panel-subtitle">
+        Latest quotations generated from Pre-BOMs.
+      </p>
+    </div>
+    <div class="pre-bom-records">
+      <div class="pre-bom-record" *ngFor="let quote of quotationRecords">
+        <div>
+          <h3>{{ quote.id }}</h3>
+          <p>{{ quote.customer }}</p>
+        </div>
+        <div class="record-meta">
+          <span class="status">{{ quote.status }}</span>
+          <span>{{ quote.amount }}</span>
+          <span>{{ quote.updatedAt }}</span>
+        </div>
+        <div class="record-actions">
+          <button class="btn btn-secondary" type="button" (click)="exportQuotation(quote.id)">Export PDF</button>
+          <button class="btn btn-secondary" type="button" (click)="openQuoteModal()">Open</button>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>
 
 <div class="modal-overlay" *ngIf="showQuoteModal" (click)="closeQuoteModal()">
-  <div class="modal modal-wide light" (click)="$event.stopPropagation()">
+  <div class="modal modal-wide quotation-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>Create Quotation</h2>
       <button class="modal-close" type="button" (click)="closeQuoteModal()">✕</button>
@@ -93,6 +117,15 @@
           <option>Nimbus Logistics</option>
         </select>
       </label>
+      <label class="field light">
+        <span>Opportunity ID</span>
+        <select [(ngModel)]="quoteForm.opportunityId" (change)="onOpportunityChange()">
+          <option value="">Select Opportunity</option>
+          <option *ngFor="let record of preBomRecords" [value]="record.opportunityId">
+            {{ record.opportunityId }} · {{ record.snapshot.customer_name || record.project }}
+          </option>
+        </select>
+      </label>
       <label class="field light email-field">
         <span>Customer Email (for sending quote)</span>
         <input type="email" [(ngModel)]="quoteForm.email" placeholder="customer@example.com">
@@ -107,6 +140,15 @@
       <label class="field light span-2">
         <span>Customer Email (for sending quote)</span>
         <input type="email" [(ngModel)]="quoteForm.email" placeholder="customer@example.com">
+      </label>
+      <label class="field light span-2">
+        <span>Opportunity ID</span>
+        <select [(ngModel)]="quoteForm.opportunityId" (change)="onOpportunityChange()">
+          <option value="">Select Opportunity</option>
+          <option *ngFor="let record of preBomRecords" [value]="record.opportunityId">
+            {{ record.opportunityId }} · {{ record.snapshot.customer_name || record.project }}
+          </option>
+        </select>
       </label>
       <label class="field light">
         <span>Customer Name</span>

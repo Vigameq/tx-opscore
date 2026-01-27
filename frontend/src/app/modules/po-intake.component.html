@@ -1,0 +1,137 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/sales-order-po">← Back to Sales Order & PO</a>
+      <p class="eyebrow">PO intake</p>
+      <h1>Customer PO Intake</h1>
+      <p class="lead">Upload and validate customer purchase order.</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Quotation Snapshot</h2>
+        <p class="panel-subtitle">Read-only reference for this PO.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Quotation ID</span>
+          <input type="text" [value]="quotationSnapshot.quotation_id" disabled>
+        </label>
+        <label class="field">
+          <span>Customer</span>
+          <input type="text" [value]="quotationSnapshot.customer_name" disabled>
+        </label>
+        <label class="field">
+          <span>Project</span>
+          <input type="text" [value]="quotationSnapshot.project_name" disabled>
+        </label>
+        <label class="field">
+          <span>Quoted Value</span>
+          <input type="text" [value]="quotationSnapshot.total_price" disabled>
+        </label>
+        <label class="field">
+          <span>Quoted Delivery (Weeks)</span>
+          <input type="text" [value]="quotationSnapshot.delivery_weeks" disabled>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>PO Header</h2>
+        <p class="panel-subtitle">Customer purchase order details.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Customer PO Number</span>
+          <input type="text" [(ngModel)]="poHeader.po_number" required>
+        </label>
+        <label class="field">
+          <span>PO Date</span>
+          <input type="date" [(ngModel)]="poHeader.po_date" required>
+        </label>
+        <label class="field">
+          <span>PO Value</span>
+          <input type="text" [(ngModel)]="poHeader.po_value" required>
+        </label>
+        <label class="field">
+          <span>Currency</span>
+          <select [(ngModel)]="poHeader.currency">
+            <option>INR</option>
+            <option>USD</option>
+            <option>EUR</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Payment Terms</span>
+          <select [(ngModel)]="poHeader.payment_terms">
+            <option>Net 30</option>
+            <option>Net 45</option>
+            <option>Net 60</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Requested Delivery Date</span>
+          <input type="date" [(ngModel)]="poHeader.delivery_date">
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>PO Validation</h2>
+        <p class="panel-subtitle">System checks against quotation values.</p>
+      </div>
+      <div class="validation-grid">
+        <div class="validation-item">
+          <span>Price match</span>
+          <strong>{{ validationFlags.priceMismatch ? 'Mismatch' : 'OK' }}</strong>
+        </div>
+        <div class="validation-item">
+          <span>Scope change</span>
+          <strong>{{ validationFlags.scopeChange ? 'Variance' : 'OK' }}</strong>
+        </div>
+        <div class="validation-item wide">
+          <span>Notes</span>
+          <strong>{{ validationFlags.varianceNotes }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Addresses</h2>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Billing Address</span>
+          <textarea rows="3" [(ngModel)]="addresses.billing_address"></textarea>
+        </label>
+        <label class="field">
+          <span>Shipping Address</span>
+          <textarea rows="3" [(ngModel)]="addresses.shipping_address"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Attachments</h2>
+        <p class="panel-subtitle">Upload customer PO document (PDF).</p>
+      </div>
+      <label class="field">
+        <span>Upload Customer PO (PDF)</span>
+        <input type="file" accept="application/pdf" (change)="onPoFileChange($event)">
+      </label>
+      <p class="file-name" *ngIf="poDocumentName">{{ poDocumentName }}</p>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="button" (click)="submitForVerification()" [disabled]="!canSubmit()">
+        Submit for Verification
+      </button>
+    </div>
+  </section>
+</div>

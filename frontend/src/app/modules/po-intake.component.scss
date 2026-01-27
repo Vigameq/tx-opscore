@@ -1,0 +1,138 @@
+:host {
+  display: block;
+}
+
+.module-page {
+  padding: 48px 24px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f5f2ea;
+}
+
+.module-hero {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  color: #7fd4c6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: #7fb4ad;
+}
+
+.lead {
+  color: #cfe4df;
+  font-size: 1.05rem;
+  max-width: 600px;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.panel {
+  background: rgba(17, 28, 31, 0.9);
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.panel-header {
+  display: grid;
+  gap: 6px;
+}
+
+.panel-subtitle {
+  color: #9cb8b3;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #cfe4df;
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: rgba(10, 18, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f5f2ea;
+}
+
+.file-name {
+  margin-top: 8px;
+  color: #9cb8b3;
+  font-size: 0.85rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn.btn-primary {
+  background: #f4b942;
+  border: none;
+  color: #1b1b1b;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.validation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.validation-item {
+  background: rgba(10, 18, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  color: #cfe4df;
+}
+
+.validation-item span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9cb8b3;
+}
+
+.validation-item strong {
+  font-size: 0.95rem;
+}
+
+.validation-item.wide {
+  grid-column: span 2;
+}

@@ -130,6 +130,16 @@
           >
         </label>
         <label class="field">
+          <span>Notes (100 words max)</span>
+          <textarea
+            rows="3"
+            placeholder="Add a short note for the project..."
+            [(ngModel)]="newProject.note"
+            name="projectNote"
+          ></textarea>
+          <small class="field-hint">{{ countWords(newProject.note) }}/100 words</small>
+        </label>
+        <label class="field">
           <span>Status</span>
           <select [(ngModel)]="newProject.status" name="projectStatus">
             <option *ngFor="let status of projectStatuses" [value]="status">
