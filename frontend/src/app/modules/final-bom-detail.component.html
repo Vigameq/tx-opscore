@@ -1,0 +1,127 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/engineering studio">← Back to Engineering Studio</a>
+      <p class="eyebrow">Final BOM</p>
+      <h1>Final BOM &amp; Engineering Freeze</h1>
+      <p class="lead">Manufacturing BOM release control.</p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ summary.status }}</span>
+        <span class="hero-pill">Role: {{ currentRole }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="tab-bar">
+      <button class="tab" [class.active]="activeTab === 'Summary'" (click)="setTab('Summary')">Summary</button>
+      <button class="tab" [class.active]="activeTab === 'FBOM Structure'" (click)="setTab('FBOM Structure')">FBOM Structure</button>
+      <button class="tab" [class.active]="activeTab === 'Engineering Review'" (click)="setTab('Engineering Review')">Engineering Review</button>
+      <button class="tab" [class.active]="activeTab === 'Workflow & Audit'" (click)="setTab('Workflow & Audit')">Workflow &amp; Audit</button>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Summary'">
+      <div class="form-grid">
+        <label class="field"><span>Final BOM ID</span><input type="text" [value]="summary.final_bom_id" disabled></label>
+        <label class="field"><span>Sales Order</span><input type="text" [value]="summary.sales_order_id" disabled></label>
+        <label class="field"><span>Source Pre-BOM</span><input type="text" [value]="summary.pre_bom_id" disabled></label>
+        <label class="field"><span>Engineering Status</span><input type="text" [value]="summary.status" disabled></label>
+        <label class="field"><span>Revision</span><input type="text" [value]="summary.revision" disabled></label>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="startEngineering()" [disabled]="!canStartEngineering()">
+          Start Engineering
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="releaseFbom()" [disabled]="!canReleaseFbom()">
+          Release FBOM
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'FBOM Structure'">
+      <div class="panel-header">
+        <h2>FBOM Structure</h2>
+        <p class="panel-subtitle">Engineering-owned BOM structure.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Item Code</span>
+          <span>Item Name</span>
+          <span>Material</span>
+          <span>Specification</span>
+          <span>Qty</span>
+          <span>UOM</span>
+          <span>Source</span>
+          <span>Vendor</span>
+          <span>Routing</span>
+          <span>QC</span>
+        </div>
+        <div class="table-row" *ngFor="let item of fbomItems">
+          <input type="text" [(ngModel)]="item.item_code" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.item_name" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.material" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.specification" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="number" [(ngModel)]="item.quantity" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.uom" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.source_type" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="text" [(ngModel)]="item.preferred_vendor" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="checkbox" [(ngModel)]="item.routing_required" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          <input type="checkbox" [(ngModel)]="item.qc_required" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+        </div>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-secondary" type="button" (click)="addFbomItem()" [disabled]="currentState !== 'ENGINEERING_IN_PROGRESS'">
+          Add item
+        </button>
+        <button class="btn btn-primary" type="button" (click)="submitForReview()" [disabled]="!canSubmitForReview()">
+          Submit for Engineering Review
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Engineering Review'">
+      <div class="panel-header">
+        <h2>Engineering Review</h2>
+        <p class="panel-subtitle">Lead review and freeze approval.</p>
+      </div>
+      <div class="form-grid">
+        <label class="field">
+          <span>Review comments</span>
+          <textarea rows="4" [(ngModel)]="reviewComments" [disabled]="currentState !== 'ENGINEERING_REVIEW'"></textarea>
+        </label>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="approveEngineering()" [disabled]="!canApproveEngineering()">
+          Approve &amp; Freeze Engineering
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="rejectEngineering()" [disabled]="currentState !== 'ENGINEERING_REVIEW'">
+          Reject Engineering
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Workflow & Audit'">
+      <div class="panel-header">
+        <h2>Workflow &amp; Audit</h2>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Date</span>
+          <span>Action</span>
+          <span>From</span>
+          <span>To</span>
+          <span>Performed By</span>
+          <span>Remarks</span>
+        </div>
+        <div class="table-row" *ngFor="let log of auditLog">
+          <span>{{ log.date }}</span>
+          <span>{{ log.action }}</span>
+          <span>{{ log.from_status }}</span>
+          <span>{{ log.to_status }}</span>
+          <span>{{ log.performed_by }}</span>
+          <span>{{ log.remarks }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

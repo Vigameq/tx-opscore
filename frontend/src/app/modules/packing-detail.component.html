@@ -1,0 +1,52 @@
+<div class="module-page" *ngIf="packing">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/logistics/packing">← Back to Packing</a>
+      <p class="eyebrow">Packing</p>
+      <h1>Packing {{ packing.packing_id }}</h1>
+      <p class="lead">Serial tagging, box creation, and packing list generation.</p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ packing.status }}</span>
+        <span class="hero-pill">Work Order: {{ packing.work_order_id }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Actions</h2>
+        <p class="panel-subtitle">Move packing through workflow stages.</p>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="startPacking()">Start Packing</button>
+        <button class="btn btn-secondary" type="button" (click)="completePacking()">Complete Packing</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Packing Lines</h2>
+        <p class="panel-subtitle">Boxes, serials, and quantities.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Box</span>
+          <span>Item Code</span>
+          <span>Serial Number</span>
+          <span>Qty</span>
+          <span>Weight (kg)</span>
+          <span>Dimensions</span>
+        </div>
+        <div class="table-row" *ngFor="let line of packingLines">
+          <span>{{ line.box_id }}</span>
+          <span>{{ line.item_code }}</span>
+          <span>{{ line.serial_number }}</span>
+          <span>{{ line.quantity }}</span>
+          <span>{{ line.weight_kg }}</span>
+          <span>{{ line.dimensions }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

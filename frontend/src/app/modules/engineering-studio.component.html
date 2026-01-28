@@ -1,0 +1,48 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Engineering Studio</p>
+      <h1>Engineering Studio</h1>
+      <p class="lead">
+        Manage Final BOM creation, engineering review, and freeze approvals.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill">Release pending: 2</span>
+        <span class="hero-pill">In review: 1</span>
+        <span class="hero-pill">Frozen: 1</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Final BOM queue</h2>
+        <p class="panel-subtitle">Track each Final BOM through freeze workflow.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Final BOM</span>
+          <span>Sales Order</span>
+          <span>Pre-BOM</span>
+          <span>Status</span>
+          <span>Revision</span>
+          <span>Owner</span>
+          <span>Updated</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let record of records">
+          <span>{{ record.id }}</span>
+          <span>{{ record.salesOrderId }}</span>
+          <span>{{ record.preBomId }}</span>
+          <span class="status-pill">{{ record.status }}</span>
+          <span>{{ record.revision }}</span>
+          <span>{{ record.owner }}</span>
+          <span>{{ record.updatedAt }}</span>
+          <a class="link-button" [routerLink]="['/engineering studio/final-bom', record.id]">Open</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,91 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">SCM planner</p>
+      <h1>SCM Planner</h1>
+      <p class="lead">
+        Run MRP from released FBOMs and drive procurement from net requirements.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill">MRP runs: {{ mrpRuns.length }}</span>
+        <span class="hero-pill">Awaiting PR: {{ awaitingPrCount }}</span>
+        <span class="hero-pill">RFQs sent: {{ rfqSentCount }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Pipeline stages</h2>
+        <p class="panel-subtitle">End-to-end MRP and procurement lifecycle.</p>
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h3>FBOM Released</h3>
+          <p>Final BOM approved and released from Engineering Studio.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>MRP Running</h3>
+          <p>Net requirements are calculated from inventory and lead times.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>MRP Completed</h3>
+          <p>MRP lines are saved and assigned to SCM for action.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>PR Created</h3>
+          <p>Purchase requisitions are grouped and created per vendor.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>RFQ Sent</h3>
+          <p>RFQs are issued to vendors and response timers begin.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Vendor Quoted</h3>
+          <p>Vendor quotes captured with L1 comparison and deviations.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>PO Created</h3>
+          <p>Selected vendor approved and PO issued for materials.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Material Ordered</h3>
+          <p>Inbound inventory updated and GRN tracking enabled.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>MRP Queue</h2>
+        <p class="panel-subtitle">Monitor MRP status and launch procurement actions.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>MRP ID</span>
+          <span>Final BOM</span>
+          <span>Sales Order</span>
+          <span>Status</span>
+          <span>Run By</span>
+          <span>Run Time</span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let run of mrpRuns">
+          <span>{{ run.mrpId }}</span>
+          <span>{{ run.finalBomId }}</span>
+          <span>{{ run.salesOrderId }}</span>
+          <span class="status-pill">{{ run.status }}</span>
+          <span>{{ run.runBy }}</span>
+          <span>{{ formatRunTime(run.runTime) }}</span>
+          <a class="link-button" [routerLink]="['/planning/mrp', run.finalBomId]">MRP Run</a>
+          <a class="link-button" [routerLink]="['/procurement/pr', run.mrpId]">PR</a>
+          <a class="link-button" [routerLink]="['/procurement/rfq', getRfqId(run.mrpId)]">RFQ</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

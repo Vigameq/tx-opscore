@@ -1,0 +1,90 @@
+<div class="module-page" *ngIf="workOrder">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/production/work-orders">← Back to Work Orders</a>
+      <p class="eyebrow">Production pulse</p>
+      <h1>Work Order {{ workOrder.summary.work_order_id }}</h1>
+      <p class="lead">Monitor operations, material issue, and QC checkpoints.</p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ workOrder.summary.status }}</span>
+        <span class="hero-pill">Line: {{ workOrder.summary.production_line }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="tab-bar">
+      <button class="tab" [class.active]="activeTab === 'Summary'" (click)="setTab('Summary')">Summary</button>
+      <button class="tab" [class.active]="activeTab === 'Operations'" (click)="setTab('Operations')">Operations</button>
+      <button class="tab" [class.active]="activeTab === 'Material Issue'" (click)="setTab('Material Issue')">Material Issue</button>
+      <button class="tab" [class.active]="activeTab === 'Quality'" (click)="setTab('Quality')">Quality</button>
+      <button class="tab" [class.active]="activeTab === 'NCR / Rework'" (click)="setTab('NCR / Rework')">NCR / Rework</button>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Summary'">
+      <div class="form-grid">
+        <label class="field"><span>Work Order ID</span><input type="text" [value]="workOrder.summary.work_order_id" disabled></label>
+        <label class="field"><span>Sales Order</span><input type="text" [value]="workOrder.summary.sales_order_id" disabled></label>
+        <label class="field"><span>Final BOM</span><input type="text" [value]="workOrder.summary.final_bom_id" disabled></label>
+        <label class="field"><span>Status</span><input type="text" [value]="workOrder.summary.status" disabled></label>
+        <label class="field"><span>Planned Qty</span><input type="text" [value]="workOrder.summary.quantity_planned" disabled></label>
+        <label class="field"><span>Completed Qty</span><input type="text" [value]="workOrder.summary.quantity_completed" disabled></label>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Operations'">
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Seq</span>
+          <span>Operation</span>
+          <span>Status</span>
+          <span>Operator</span>
+        </div>
+        <div class="table-row" *ngFor="let op of workOrder.operations">
+          <span>{{ op.operation_seq }}</span>
+          <span>{{ op.operation_name }}</span>
+          <span>{{ op.status }}</span>
+          <span>{{ op.operator }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Material Issue'">
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="issueMaterial()">Issue Material</button>
+      </div>
+      <p class="panel-subtitle">Material issues will generate a material issue note and move to production.</p>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Quality'">
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="passQc()">Pass QC</button>
+        <button class="btn btn-secondary" type="button" (click)="failQc()">Fail QC</button>
+      </div>
+      <p class="panel-subtitle">QC results update the workflow stage and assign NCR if needed.</p>
+      <div class="form-grid">
+        <label class="field"><span>QC Stage</span><input type="text" [value]="workOrder.qc.stage" disabled></label>
+        <label class="field"><span>Inspector</span><input type="text" [value]="workOrder.qc.inspector" disabled></label>
+        <label class="field"><span>Remarks</span><input type="text" [value]="workOrder.qc.remarks" disabled></label>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'NCR / Rework'">
+      <div class="table-grid">
+        <div class="table-head">
+          <span>NCR ID</span>
+          <span>Severity</span>
+          <span>Status</span>
+        </div>
+        <div class="table-row" *ngFor="let ncr of workOrder.ncrs">
+          <span>{{ ncr.ncr_id }}</span>
+          <span>{{ ncr.severity }}</span>
+          <span>{{ ncr.status }}</span>
+        </div>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="markProductionComplete()">Mark Production Complete</button>
+      </div>
+    </div>
+  </section>
+</div>

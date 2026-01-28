@@ -90,4 +90,10 @@ export class SalesOrderStoreService {
 
     this.salesOrders = [entry, ...this.salesOrders];
   }
+
+  updateStatusByQuotationId(quotationId: string, status: string): void {
+    this.salesOrders = this.salesOrders.map((order) =>
+      order.quotationId === quotationId ? { ...order, status } : order
+    );
+  }
 }

@@ -1,0 +1,52 @@
+<div class="module-page" *ngIf="shipment">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/logistics/packing">← Back to Packing</a>
+      <p class="eyebrow">Shipment</p>
+      <h1>Shipment {{ shipment.shipment_id }}</h1>
+      <p class="lead">Dispatch planning and delivery tracking.</p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ shipment.status }}</span>
+        <span class="hero-pill">Route: {{ shipment.from_location }} → {{ shipment.to_location }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="tab-bar">
+      <button class="tab" [class.active]="activeTab === 'Transport Details'" (click)="setTab('Transport Details')">Transport Details</button>
+      <button class="tab" [class.active]="activeTab === 'Documents'" (click)="setTab('Documents')">Documents</button>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Transport Details'">
+      <div class="form-grid">
+        <label class="field"><span>Transporter</span><input type="text" [value]="shipment.transporter" disabled></label>
+        <label class="field"><span>Vehicle Number</span><input type="text" [value]="shipment.vehicle_number" disabled></label>
+        <label class="field"><span>LR Number</span><input type="text" [value]="shipment.lr_number" disabled></label>
+        <label class="field"><span>Dispatch Date</span><input type="text" [value]="shipment.dispatch_date" disabled></label>
+        <label class="field"><span>Expected Delivery</span><input type="text" [value]="shipment.expected_delivery" disabled></label>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="dispatchGoods()">Dispatch Goods</button>
+        <button class="btn btn-secondary" type="button" (click)="markInTransit()">Mark In Transit</button>
+        <button class="btn btn-secondary" type="button" (click)="markDelivered()">Mark Delivered</button>
+        <button class="btn btn-primary" type="button" (click)="confirmDelivery()">Confirm Delivery</button>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Documents'">
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Type</span>
+          <span>Number</span>
+          <span>File</span>
+        </div>
+        <div class="table-row" *ngFor="let doc of documents">
+          <span>{{ doc.doc_type }}</span>
+          <span>{{ doc.doc_number }}</span>
+          <span>{{ doc.file_path }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

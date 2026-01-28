@@ -1,0 +1,58 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/scm-planner">← Back to SCM Planner</a>
+      <p class="eyebrow">RFQ management</p>
+      <h1>Vendor RFQ Management</h1>
+      <p class="lead">Track vendor quotes and approve purchase orders.</p>
+      <div class="hero-actions" *ngIf="pr">
+        <span class="hero-pill">PR: {{ pr.prId }}</span>
+        <span class="hero-pill">Status: {{ pr.status }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Actions</h2>
+        <p class="panel-subtitle">Move RFQ through vendor selection.</p>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="sendRfq()" [disabled]="!canSendRfq()">Send RFQ</button>
+        <button class="btn btn-secondary" type="button" (click)="captureQuotes()" [disabled]="!canCaptureQuotes()">
+          Capture Vendor Quotes
+        </button>
+        <button class="btn btn-primary" type="button" (click)="approveVendor()" [disabled]="!canApproveVendor()">
+          Approve Vendor
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="confirmPoSent()" [disabled]="!canConfirmPo()">
+          Confirm PO Sent
+        </button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Vendor Quotes</h2>
+        <p class="panel-subtitle">Capture L1 comparison and deviations.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Vendor</span>
+          <span>Item Code</span>
+          <span>Quoted Price</span>
+          <span>Lead Time</span>
+          <span>Rating</span>
+        </div>
+        <div class="table-row" *ngFor="let quote of vendorQuotes">
+          <span>{{ quote.vendor }}</span>
+          <span>{{ quote.item_code }}</span>
+          <span>₹{{ quote.quoted_price }}</span>
+          <span>{{ quote.lead_time }} days</span>
+          <span>{{ quote.rating }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

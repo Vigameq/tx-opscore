@@ -1,0 +1,38 @@
+<div class="module-page" *ngIf="improvement; else emptyState">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/quality/improvements">← Back to Improvements</a>
+      <p class="eyebrow">Improvement detail</p>
+      <h1>{{ improvement.improvement_id }}</h1>
+      <p class="lead">{{ improvement.issue_description }}</p>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="form-grid">
+      <label class="field"><span>Source type</span><input type="text" [value]="improvement.source_type" disabled></label>
+      <label class="field"><span>Issue category</span><input type="text" [value]="improvement.issue_category" disabled></label>
+      <label class="field"><span>Product model</span><input type="text" [value]="improvement.product_model" disabled></label>
+      <label class="field"><span>Assigned team</span><input type="text" [value]="improvement.assigned_team" disabled></label>
+      <label class="field"><span>Status</span><input type="text" [(ngModel)]="improvement.status"></label>
+      <label class="field"><span>Improvement action</span><input type="text" [(ngModel)]="improvement.improvement_action"></label>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-secondary" type="button" (click)="createEco()">Create ECO</button>
+      <button class="btn btn-primary" type="button" (click)="closeImprovement()">Mark Completed</button>
+    </div>
+  </section>
+</div>
+
+<ng-template #emptyState>
+  <div class="module-page">
+    <header class="module-hero">
+      <div class="hero-main">
+        <a class="back-link" routerLink="/quality/improvements">← Back to Improvements</a>
+        <p class="eyebrow">Improvement detail</p>
+        <h1>Improvement not found</h1>
+        <p class="lead">Select an improvement record from the tracker.</p>
+      </div>
+    </header>
+  </div>
+</ng-template>

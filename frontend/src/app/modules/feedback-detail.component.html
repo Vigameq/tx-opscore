@@ -1,0 +1,80 @@
+<div class="module-page" *ngIf="feedback as fb; else emptyState">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/quality/feedback">← Back to Feedback</a>
+      <p class="eyebrow">Feedback detail</p>
+      <h1>Feedback {{ fb.header.feedback_id }}</h1>
+      <p class="lead">Review responses and track corrective actions.</p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ fb.header.status }}</span>
+        <span class="hero-pill">CSAT: {{ fb.header.csat_score }}</span>
+        <span class="hero-pill">NPS: {{ fb.header.nps_score }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="tab-bar">
+      <button class="tab" [class.active]="activeTab === 'Customer Responses'" (click)="setTab('Customer Responses')">Customer Responses</button>
+      <button class="tab" [class.active]="activeTab === 'Internal Review'" (click)="setTab('Internal Review')">Internal Review</button>
+      <button class="tab" [class.active]="activeTab === 'Improvement Actions'" (click)="setTab('Improvement Actions')">Improvement Actions</button>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Customer Responses'">
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Category</span>
+          <span>Question</span>
+          <span>Rating</span>
+          <span>Comments</span>
+        </div>
+        <div class="table-row" *ngFor="let response of fb.responses">
+          <span>{{ response.category }}</span>
+          <span>{{ response.question }}</span>
+          <span>{{ response.rating }}</span>
+          <span>{{ response.comments }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Internal Review'">
+      <div class="form-grid">
+        <label class="field"><span>Root cause</span><input type="text" [(ngModel)]="fb.internal_review.root_cause"></label>
+        <label class="field"><span>Remarks</span><input type="text" [(ngModel)]="fb.internal_review.remarks"></label>
+        <label class="field"><span>Action required</span><input type="checkbox" [(ngModel)]="fb.internal_review.action_required"></label>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="startImprovement()">Start Improvement</button>
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'Improvement Actions'">
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Action ID</span>
+          <span>Description</span>
+          <span>Assigned To</span>
+          <span>Status</span>
+        </div>
+        <div class="table-row" *ngFor="let action of fb.actions">
+          <span>{{ action.action_id }}</span>
+          <span>{{ action.description }}</span>
+          <span>{{ action.assigned_to }}</span>
+          <span>{{ action.status }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<ng-template #emptyState>
+  <div class="module-page">
+    <header class="module-hero">
+      <div class="hero-main">
+        <a class="back-link" routerLink="/quality/feedback">← Back to Feedback</a>
+        <p class="eyebrow">Feedback detail</p>
+        <h1>Feedback not found</h1>
+        <p class="lead">Select a feedback record from the dashboard.</p>
+      </div>
+    </header>
+  </div>
+</ng-template>

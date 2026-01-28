@@ -1,0 +1,143 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Executive Intelligence</p>
+      <h1>Executive Dashboard</h1>
+      <p class="lead">
+        Sales Order → Engineering/Production/Delivery → Customer Feedback → Analytics Engine → Auto-trigger NCR/ECO.
+      </p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Executive flow</h2>
+        <p class="panel-subtitle">Visibility from delivery to roadmap actions.</p>
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h3>Sales Order</h3>
+          <p>Commercial and delivery commitments locked.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Engineering / Production / Delivery</h3>
+          <p>Operational execution with QA and logistics controls.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Customer Feedback</h3>
+          <p>CSAT/NPS captured and linked to orders.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Analytics Engine</h3>
+          <p>KPIs and trend diagnostics across functions.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Auto-trigger NCR / ECO</h3>
+          <p>Low scores and delays spawn improvement tasks.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Executive Dashboard &amp; Roadmap</h3>
+          <p>Portfolio-level insights and improvement tracking.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Order overview</h2>
+        <p class="panel-subtitle">Real-time order health.</p>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <p>Total orders</p>
+          <h3>{{ snapshot.total_orders }}</h3>
+        </div>
+        <div class="kpi-card">
+          <p>On-time delivery %</p>
+          <h3>{{ snapshot.on_time_delivery_pct }}%</h3>
+        </div>
+        <div class="kpi-card">
+          <p>Delayed orders</p>
+          <h3>{{ snapshot.delayed_orders }}</h3>
+        </div>
+        <div class="kpi-card">
+          <p>In production</p>
+          <h3>{{ snapshot.in_production }}</h3>
+        </div>
+        <div class="kpi-card">
+          <p>In transit</p>
+          <h3>{{ snapshot.in_transit }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel two-col">
+      <div>
+        <div class="panel-header">
+          <h2>Quality overview</h2>
+          <p class="panel-subtitle">Yield and defect signals.</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <p>Final QC pass rate</p>
+            <h3>{{ snapshot.final_qc_pass_rate }}%</h3>
+          </div>
+          <div class="kpi-card">
+            <p>NCR count</p>
+            <h3>{{ snapshot.ncr_count }}</h3>
+          </div>
+          <div class="kpi-card">
+            <p>Rework rate %</p>
+            <h3>{{ snapshot.rework_rate_pct }}%</h3>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel-header">
+          <h2>Customer satisfaction</h2>
+          <p class="panel-subtitle">CSAT &amp; NPS indicators.</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <p>Avg CSAT</p>
+            <h3>{{ snapshot.avg_csat_score }}</h3>
+          </div>
+          <div class="kpi-card">
+            <p>NPS Score</p>
+            <h3>{{ snapshot.nps_score }}</h3>
+          </div>
+          <div class="kpi-card">
+            <p>Low feedback count</p>
+            <h3>{{ snapshot.low_feedback_count }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Top issues</h2>
+        <p class="panel-subtitle">Drivers for NCR/ECO actions.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Issue Category</span>
+          <span>Product Model</span>
+          <span>Count</span>
+          <span>Status</span>
+        </div>
+        <div class="table-row" *ngFor="let issue of topIssues">
+          <span>{{ issue.issue_category }}</span>
+          <span>{{ issue.product_model }}</span>
+          <span>{{ issue.count }}</span>
+          <span>{{ issue.status }}</span>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <a class="link-button" routerLink="/quality/improvements">View improvement tracker →</a>
+      </div>
+    </div>
+  </section>
+</div>

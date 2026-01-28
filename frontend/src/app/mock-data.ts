@@ -89,33 +89,38 @@ export const MODULES: ModuleCard[] = [
   },
   {
     icon: 'SS',
-    name: 'Solution Studio',
+    name: 'Engineering Studio',
     description: 'Design solutions with costing, feasibility, and risk overlays.',
-    tags: ['Beta', 'Configurable']
+    tags: ['Beta', 'Configurable'],
+    route: '/engineering studio'
   },
   {
     icon: 'SC',
     name: 'SCM Planner',
     description: 'Plan inventory, suppliers, and lead times with scenario views.',
-    tags: ['Live', 'Forecasting']
+    tags: ['Live', 'Forecasting'],
+    route: '/modules/scm-planner'
   },
   {
     icon: 'PR',
     name: 'Production Pulse',
     description: 'Manage builds, quality gates, and real-time capacity insights.',
-    tags: ['Live', 'Factory-ready']
+    tags: ['Live', 'Factory-ready'],
+    route: '/production/work-orders'
   },
   {
     icon: 'DL',
     name: 'Delivery Logistics',
     description: 'Orchestrate shipments, milestones, and last-mile visibility.',
-    tags: ['Live', 'GPS feeds']
+    tags: ['Live', 'GPS feeds'],
+    route: '/logistics/packing'
   },
   {
     icon: 'CL',
     name: 'Closure Desk',
     description: 'Confirm sign-off, handover documentation, and renewal paths.',
-    tags: ['Live', 'Retention']
+    tags: ['Live', 'Retention'],
+    route: '/quality/feedback'
   },
   {
     icon: 'IN',
@@ -132,7 +137,7 @@ export const WORKFLOW_COLUMNS: WorkflowColumn[] = [
   },
   {
     title: 'Core ops',
-    items: ['Solution Studio', 'SCM Planner']
+    items: ['Engineering Studio', 'SCM Planner']
   },
   {
     title: 'Delivery',

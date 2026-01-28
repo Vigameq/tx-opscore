@@ -1,0 +1,84 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Production pulse</p>
+      <h1>Work Orders</h1>
+      <p class="lead">Track production readiness, QC, and completion milestones.</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Production pipeline</h2>
+        <p class="panel-subtitle">Work order and QA workflow stages.</p>
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h3>Ready for Production</h3>
+          <p>FBOM released and work order can be created for production.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Material Issued</h3>
+          <p>Inventory reserved and material issue note generated.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Production Started</h3>
+          <p>Routing operations underway with operator assignments.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>In-Process QC</h3>
+          <p>Quality checks performed during production stages.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Assembly Completed</h3>
+          <p>Assembly complete and ready for final QA checks.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Final QC Pending</h3>
+          <p>Final QA inspection scheduled with test protocol.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Final QC Passed</h3>
+          <p>Quality approval granted and ready for dispatch.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Rework Required</h3>
+          <p>NCR raised and production looped back for corrections.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Production Completed</h3>
+          <p>Finished goods updated and logistics notified.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Work order list</h2>
+        <p class="panel-subtitle">Active work orders across production lines.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Work Order</span>
+          <span>Product Family</span>
+          <span>Planned</span>
+          <span>Completed</span>
+          <span>Status</span>
+          <span>Production Line</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let order of workOrders">
+          <span>{{ order.work_order_id }}</span>
+          <span>{{ order.product_family }}</span>
+          <span>{{ order.quantity_planned }}</span>
+          <span>{{ order.quantity_completed }}</span>
+          <span class="status-pill">{{ order.status }}</span>
+          <span>{{ order.production_line }}</span>
+          <a class="link-button" [routerLink]="['/production/work-order', order.work_order_id]">Open</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,62 @@
+<div class="form-page">
+  <header class="form-hero">
+    <h1>TierX Customer Feedback</h1>
+    <p>We value your feedback to improve product quality and delivery.</p>
+  </header>
+
+  <section class="form-card">
+    <h2>Design &amp; Engineering</h2>
+    <label class="field">
+      <span>Design suitability</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.designSuitability">
+    </label>
+    <label class="field">
+      <span>Customization support</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.customizationSupport">
+    </label>
+  </section>
+
+  <section class="form-card">
+    <h2>Product Quality</h2>
+    <label class="field">
+      <span>Material quality</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.materialQuality">
+    </label>
+    <label class="field">
+      <span>Build &amp; finish</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.buildFinish">
+    </label>
+  </section>
+
+  <section class="form-card">
+    <h2>Support &amp; Service</h2>
+    <label class="field">
+      <span>Responsiveness</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.responsiveness">
+    </label>
+    <label class="field">
+      <span>Issue resolution</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.issueResolution">
+    </label>
+  </section>
+
+  <section class="form-card">
+    <h2>Overall Experience</h2>
+    <label class="field">
+      <span>Overall satisfaction</span>
+      <input type="number" min="1" max="5" [(ngModel)]="form.overallSatisfaction">
+    </label>
+    <label class="field">
+      <span>Would you recommend TierX? (NPS)</span>
+      <input type="number" min="0" max="10" [(ngModel)]="form.npsScore">
+    </label>
+    <label class="field">
+      <span>Additional comments</span>
+      <textarea rows="4" [(ngModel)]="form.comments"></textarea>
+    </label>
+  </section>
+
+  <div class="form-actions">
+    <button class="btn" type="button" (click)="submitFeedback()">Submit Feedback</button>
+  </div>
+</div>

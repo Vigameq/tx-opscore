@@ -1,0 +1,72 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Closure desk</p>
+      <h1>Customer Feedback</h1>
+      <p class="lead">Track feedback collection, internal reviews, and improvement actions.</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Feedback lifecycle</h2>
+        <p class="panel-subtitle">From delivery completion to analytics inputs.</p>
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h3>Feedback Pending</h3>
+          <p>Delivery completed and feedback record generated.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Feedback Sent</h3>
+          <p>Survey link emailed to customer contact.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Feedback Received</h3>
+          <p>Responses captured and CSAT/NPS calculated.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Internal Review</h3>
+          <p>Cross-functional review and root cause analysis.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Action In Progress</h3>
+          <p>Corrective/preventive actions tracked.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Feedback Closed</h3>
+          <p>Cycle closed and insights sent to analytics.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Feedback dashboard</h2>
+        <p class="panel-subtitle">Monitor feedback status and review actions.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Feedback ID</span>
+          <span>Sales Order</span>
+          <span>Customer</span>
+          <span>CSAT</span>
+          <span>NPS</span>
+          <span>Status</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let fb of feedbacks">
+          <span>{{ fb.feedback_id }}</span>
+          <span>{{ fb.sales_order_id }}</span>
+          <span>{{ fb.customer_id }}</span>
+          <span>{{ fb.csat_score }}</span>
+          <span>{{ fb.nps_score }}</span>
+          <span class="status-pill">{{ fb.status }}</span>
+          <a class="link-button" [routerLink]="['/quality/feedback', fb.feedback_id]">Review</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

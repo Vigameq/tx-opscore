@@ -1,0 +1,62 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/scm-planner">← Back to SCM Planner</a>
+      <p class="eyebrow">MRP Run</p>
+      <h1>MRP Run for {{ mrpRun.finalBomId }}</h1>
+      <p class="lead">
+        Calculate net requirements from released Final BOM items.
+      </p>
+      <div class="hero-actions">
+        <span class="hero-pill">Status: {{ mrpRun.status }}</span>
+        <span class="hero-pill">Sales Order: {{ mrpRun.salesOrderId }}</span>
+        <span class="hero-pill">Delivery: {{ mrpRun.deliveryDate }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Actions</h2>
+        <p class="panel-subtitle">Run MRP and complete the calculation step.</p>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="runMrp()" [disabled]="!canRunMrp()">Run MRP</button>
+        <button class="btn btn-secondary" type="button" (click)="completeMrp()" [disabled]="!canCompleteMrp()">Complete MRP</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>MRP Lines</h2>
+        <p class="panel-subtitle">Net requirements generated from inventory and lead times.</p>
+      </div>
+      <div class="table-grid" *ngIf="mrpRun.lines.length > 0; else emptyState">
+        <div class="table-head">
+          <span>Item Code</span>
+          <span>Gross Qty</span>
+          <span>On Hand</span>
+          <span>On Order</span>
+          <span>Net Qty</span>
+          <span>Required Date</span>
+          <span>Source</span>
+          <span>Vendor</span>
+        </div>
+        <div class="table-row" *ngFor="let line of mrpRun.lines">
+          <span>{{ line.item_code }}</span>
+          <span>{{ line.gross_qty }}</span>
+          <span>{{ line.on_hand_qty }}</span>
+          <span>{{ line.on_order_qty }}</span>
+          <span>{{ line.net_qty }}</span>
+          <span>{{ line.required_date }}</span>
+          <span>{{ line.source_type }}</span>
+          <span>{{ line.preferred_vendor }}</span>
+        </div>
+      </div>
+      <ng-template #emptyState>
+        <p class="empty-state">No MRP lines yet. Run MRP to generate net requirements.</p>
+      </ng-template>
+    </div>
+  </section>
+</div>

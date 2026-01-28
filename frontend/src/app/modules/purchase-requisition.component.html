@@ -1,0 +1,43 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/modules/scm-planner">← Back to SCM Planner</a>
+      <p class="eyebrow">Purchase requisition</p>
+      <h1>Purchase Requisition</h1>
+      <p class="lead">Create PR headers and lines after MRP completion.</p>
+      <div class="hero-actions" *ngIf="mrpRun">
+        <span class="hero-pill">MRP: {{ mrpRun.mrpId }}</span>
+        <span class="hero-pill">Status: {{ mrpRun.status }}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Actions</h2>
+        <p class="panel-subtitle">Generate PR when MRP is completed.</p>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" type="button" (click)="createPr()" [disabled]="!canCreatePr()">Create PR</button>
+        <a class="btn btn-secondary" *ngIf="pr" [routerLink]="['/procurement/rfq', pr.prId]">Go to RFQ</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>PR Summary</h2>
+        <p class="panel-subtitle">Status and identifiers for this requisition.</p>
+      </div>
+      <div class="form-grid" *ngIf="pr; else emptyState">
+        <label class="field"><span>PR ID</span><input type="text" [value]="pr.prId" disabled></label>
+        <label class="field"><span>Status</span><input type="text" [value]="pr.status" disabled></label>
+        <label class="field"><span>Created By</span><input type="text" [value]="pr.createdBy" disabled></label>
+        <label class="field"><span>Created At</span><input type="text" [value]="pr.createdAt" disabled></label>
+      </div>
+      <ng-template #emptyState>
+        <p class="empty-state">No PR created yet.</p>
+      </ng-template>
+    </div>
+  </section>
+</div>

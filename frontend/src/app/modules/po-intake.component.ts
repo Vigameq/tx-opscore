@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SalesOrderStoreService } from '../services/sales-order-store.service';
 
 @Component({
   selector: 'app-po-intake',
@@ -45,7 +46,10 @@ export class PoIntakeComponent {
 
   poDocumentName = '';
 
-  constructor(route: ActivatedRoute) {
+  private salesOrderStore: SalesOrderStoreService;
+
+  constructor(route: ActivatedRoute, salesOrderStore: SalesOrderStoreService) {
+    this.salesOrderStore = salesOrderStore;
     route.paramMap.subscribe((params) => {
       this.quotationId = params.get('quotationId') || this.quotationSnapshot.quotation_id;
       this.quotationSnapshot = {
@@ -79,6 +83,7 @@ export class PoIntakeComponent {
       return;
     }
     this.currentState = 'PO_VERIFIED';
+    this.salesOrderStore.updateStatusByQuotationId(this.quotationId, 'PO_VERIFIED');
     window.alert('PO submitted and verified (mock).');
   }
 

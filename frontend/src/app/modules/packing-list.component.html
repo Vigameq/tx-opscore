@@ -1,0 +1,80 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/">← Back to marketplace</a>
+      <p class="eyebrow">Delivery logistics</p>
+      <h1>Packing &amp; Dispatch</h1>
+      <p class="lead">Manage packing, serial tagging, and dispatch readiness.</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Delivery pipeline</h2>
+        <p class="panel-subtitle">From packing through delivery confirmation.</p>
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h3>Ready for Packing</h3>
+          <p>Production completed and goods queued for packing.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Packing in Progress</h3>
+          <p>Serial tagging and packing lines in execution.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Packed</h3>
+          <p>Packing list generated and inventory moved to FG.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Dispatch Planned</h3>
+          <p>Transporter selected and dispatch scheduled.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Dispatched</h3>
+          <p>Delivery challan and e-way bill generated.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>In Transit</h3>
+          <p>Live tracking enabled for shipments.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Delivered</h3>
+          <p>Goods delivered at customer site.</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>Delivery Confirmed</h3>
+          <p>POD uploaded and ready for invoicing/installation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Packing list</h2>
+        <p class="panel-subtitle">Packing headers awaiting dispatch.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Packing ID</span>
+          <span>Work Order</span>
+          <span>Sales Order</span>
+          <span>Status</span>
+          <span>Packed At</span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let pack of packingHeaders">
+          <span>{{ pack.packing_id }}</span>
+          <span>{{ pack.work_order_id }}</span>
+          <span>{{ pack.sales_order_id }}</span>
+          <span class="status-pill">{{ pack.status }}</span>
+          <span>{{ pack.packed_at || '—' }}</span>
+          <a class="link-button" [routerLink]="['/logistics/packing', pack.packing_id]">Pack</a>
+          <a class="link-button" [routerLink]="['/logistics/shipment', getShipmentLink(pack.packing_id)]">Shipment</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

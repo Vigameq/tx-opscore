@@ -1,0 +1,37 @@
+<div class="module-page">
+  <header class="module-hero">
+    <div class="hero-main">
+      <a class="back-link" routerLink="/executive/dashboard">← Back to Executive Dashboard</a>
+      <p class="eyebrow">Improvement tracker</p>
+      <h1>Product Improvement Tracker</h1>
+      <p class="lead">Track corrective, preventive, and roadmap actions.</p>
+    </div>
+  </header>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Improvement backlog</h2>
+        <p class="panel-subtitle">Actions triggered from feedback, NCR, and delivery signals.</p>
+      </div>
+      <div class="table-grid">
+        <div class="table-head">
+          <span>Improvement ID</span>
+          <span>Product Model</span>
+          <span>Issue Category</span>
+          <span>Assigned Team</span>
+          <span>Status</span>
+          <span></span>
+        </div>
+        <div class="table-row" *ngFor="let item of improvements">
+          <span>{{ item.improvement_id }}</span>
+          <span>{{ item.product_model }}</span>
+          <span>{{ item.issue_category }}</span>
+          <span>{{ item.assigned_team }}</span>
+          <span>{{ item.status }}</span>
+          <a class="link-button" [routerLink]="['/quality/improvement', item.improvement_id]">Open</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
